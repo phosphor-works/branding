@@ -1,0 +1,12 @@
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Ad-hoc rasterization output — generate locally via
+# `export.sh` (not yet committed) rather than checking in PNGs.
+png/
+out/
