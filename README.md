@@ -11,19 +11,29 @@ blue / purple / rose gradient logos you see on
 
 ```
 svg/
-├── dark/                   assets tuned for dark surfaces
-│   ├── phosphor.svg        main app icon
-│   ├── phosphor-editor.svg editor app icon
-│   └── phosphor-settings.svg
-└── light/                  light-mode variants (deeper accents,
-    ├── phosphor.svg        near-white bg, lower halation)
-    ├── phosphor-editor.svg
-    └── phosphor-settings.svg
+├── dark/                           assets tuned for dark surfaces
+│   ├── phosphor.svg                umbrella brand mark (Φ)
+│   ├── plasmazones.svg             PlasmaZones app icon
+│   ├── plasmazones-editor.svg      PlasmaZones layout editor
+│   └── plasmazones-settings.svg    PlasmaZones settings
+└── light/                          near-white variants
+    ├── phosphor.svg
+    ├── plasmazones.svg
+    ├── plasmazones-editor.svg
+    └── plasmazones-settings.svg
 ```
 
-All logos are 1024 × 1024 SVG with `viewBox="96 96 832 832"`.  The
-corner rounding, stroke widths, and gradient stops are shared across
-variants so they read as a family.
+All marks share the same outer frame: a 1024 × 1024 SVG with
+`viewBox="96 96 832 832"`, a 4-stop cyan → blue → purple → rose
+gradient border, and a radial navy (dark) or near-white (light)
+inner fill.  The inner content distinguishes them:
+
+| Mark                   | Inner                                                        |
+|------------------------|--------------------------------------------------------------|
+| `phosphor`             | Φ — stylized flux symbol, umbrella brand.                    |
+| `plasmazones`          | Five stroked zones, the core tiling motif.                   |
+| `plasmazones-editor`   | Zone motif wrapped in a canvas mark.                         |
+| `plasmazones-settings` | Zone motif wrapped in a cog outline.                         |
 
 ## Color tokens
 
