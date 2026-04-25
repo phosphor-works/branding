@@ -23,10 +23,14 @@
       <stop offset="1"    stop-color="#F0C2D1"/>
     </linearGradient>
 
+    <!-- Foreground readability against the pastel-tinted panel —
+         see the matching note in light/phosphor.svg.  Deeper
+         brand palette stops keep contrast across the cyan-corner
+         and rose-corner blend points. -->
     <linearGradient id="gZones" x1="260" y1="300" x2="820" y2="820" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#0EA5E9"/>
-      <stop offset="0.55" stop-color="#7C3AED"/>
-      <stop offset="1" stop-color="#E11D48"/>
+      <stop offset="0"    stop-color="#075985"/>
+      <stop offset="0.55" stop-color="#4C1D95"/>
+      <stop offset="1"    stop-color="#881337"/>
     </linearGradient>
 
     <!-- Less glow on light theme -->
