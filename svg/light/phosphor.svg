@@ -17,10 +17,17 @@
             <stop offset="0.75" stop-color="#D7C9FA"/>
             <stop offset="1"    stop-color="#F0C2D1"/>
         </linearGradient>
+        <!-- Foreground sits on the pastel-tinted panel — the brand
+             palette at sky-500/violet-600/rose-600 was readable on
+             the old near-white panel but blends into the pastel
+             stops at the matching corners (cyan on light-cyan,
+             rose on light-rose).  Drop two shades to sky-800 /
+             violet-900 / rose-800 so the phi mark stays high-
+             contrast across the whole sweep. -->
         <linearGradient id="pzl-phi" x1="300" y1="240" x2="724" y2="784" gradientUnits="userSpaceOnUse">
-            <stop offset="0"    stop-color="#0EA5E9"/>
-            <stop offset="0.55" stop-color="#7C3AED"/>
-            <stop offset="1"    stop-color="#E11D48"/>
+            <stop offset="0"    stop-color="#075985"/>
+            <stop offset="0.55" stop-color="#4C1D95"/>
+            <stop offset="1"    stop-color="#881337"/>
         </linearGradient>
         <filter id="pzl-glow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="5" result="blur"/>
