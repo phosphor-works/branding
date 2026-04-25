@@ -6,12 +6,17 @@
             <stop offset="0.75" stop-color="#7C3AED"/>
             <stop offset="1"    stop-color="#E11D48"/>
         </linearGradient>
-        <radialGradient id="pzl-bg" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
-            gradientTransform="translate(420 360) rotate(135) scale(760)">
-            <stop offset="0"    stop-color="#F6F9FF"/>
-            <stop offset="0.65" stop-color="#EEF3FF"/>
-            <stop offset="1"    stop-color="#E8EEFF"/>
-        </radialGradient>
+        <!-- Light-variant inner panel uses the brand palette tinted
+             ~25% over the off-white base so the surface echoes the
+             border sweep instead of reading as a blank white card.
+             Stops match the border gradient direction so the panel
+             "follows through" the cyan→blue→purple→rose sweep. -->
+        <linearGradient id="pzl-bg" x1="120" y1="120" x2="904" y2="904" gradientUnits="userSpaceOnUse">
+            <stop offset="0"    stop-color="#BCE4F9"/>
+            <stop offset="0.45" stop-color="#C7DBFC"/>
+            <stop offset="0.75" stop-color="#D7C9FA"/>
+            <stop offset="1"    stop-color="#F0C2D1"/>
+        </linearGradient>
         <linearGradient id="pzl-phi" x1="300" y1="240" x2="724" y2="784" gradientUnits="userSpaceOnUse">
             <stop offset="0"    stop-color="#0EA5E9"/>
             <stop offset="0.55" stop-color="#7C3AED"/>
@@ -47,11 +52,12 @@
     <rect x="96" y="96" width="832" height="832" rx="190" fill="url(#pzl-border)"/>
     <rect x="132" y="132" width="760" height="760" rx="170" fill="url(#pzl-bg)" filter="url(#pzl-shadow)"/>
     <g clip-path="url(#pzl-clip)">
-        <!-- Ambient accent glow, lighter than the dark variant so it
-             doesn't overwhelm the near-white surface. -->
-        <circle cx="320" cy="310" r="440" fill="#0EA5E9" opacity="0.035"/>
-        <circle cx="790" cy="580" r="460" fill="#7C3AED" opacity="0.035"/>
-        <circle cx="740" cy="360" r="390" fill="#E11D48" opacity="0.025"/>
+        <!-- Volumetric accent glows.  The pastel base gradient
+             carries the palette; these add soft hot-spots so the
+             panel doesn't read as a flat tint. -->
+        <circle cx="320" cy="310" r="440" fill="#0EA5E9" opacity="0.10"/>
+        <circle cx="790" cy="580" r="460" fill="#7C3AED" opacity="0.10"/>
+        <circle cx="740" cy="360" r="390" fill="#E11D48" opacity="0.08"/>
         <!-- Φ mark.  Light variant uses the deeper accent palette so
              the stroke stays readable against the near-white inner. -->
         <g filter="url(#pzl-glow)">
