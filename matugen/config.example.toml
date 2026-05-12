@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2026 fuddlesworth
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# PlasmaZones matugen config — example.
+#
+# Merge this into your existing ~/.config/matugen/config.toml (or copy it
+# wholesale if you don't have one). Then:
+#
+#   matugen image /path/to/wallpaper.png
+#
+# ...will regenerate ~/.config/plasmazones/palette.toml with a
+# Phosphor-structured palette seeded from that wallpaper.
+#
+# If you want the static brand palette instead (wallpaper-independent),
+# symlink or copy data/palettes/phosphor.toml into place directly and
+# skip matugen entirely.
+
+[config]
+# "protect" colors are not tonally-shifted — useful if you want to pin
+# the rose/error slot to the brand hex instead of the wallpaper's error
+# derivation.  Leave empty for a fully wallpaper-reactive palette.
+# custom_colors = { rose = { color = "#F43F5E", blend = false } }
+
+[templates.plasmazones]
+input_path  = "~/.config/matugen/templates/phosphor-palette.toml"
+output_path = "~/.config/plasmazones/palette.toml"
+# post_hook = "pkill -USR1 plasmazones"  # uncomment once the daemon
+                                          # grows a reload signal
+
+# Optional: dump a pywal-compatible colors.json alongside so terminals,
+# waybar, etc. pick up the same scheme.  Reuses the same template — the
+# [ansi] block is the portable part.
+# [templates.plasmazones-ansi]
+# input_path  = "~/.config/matugen/templates/phosphor-palette.toml"
+# output_path = "~/.cache/wal/colors.json"
