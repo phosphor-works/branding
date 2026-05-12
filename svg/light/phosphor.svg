@@ -54,7 +54,7 @@
                 <feMergeNode in="SourceGraphic"/>
             </feMerge>
         </filter>
-        <clipPath id="pzl-clip"><rect x="96" y="96" width="832" height="832" rx="190"/></clipPath>
+        <clipPath id="pzl-clip"><rect x="132" y="132" width="760" height="760" rx="170"/></clipPath>
     </defs>
     <rect x="96" y="96" width="832" height="832" rx="190" fill="url(#pzl-border)"/>
     <rect x="132" y="132" width="760" height="760" rx="170" fill="url(#pzl-bg)" filter="url(#pzl-shadow)"/>
