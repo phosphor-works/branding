@@ -13,11 +13,13 @@ blue / purple / rose gradient logos you see on
 svg/
 ├── dark/                           assets tuned for dark surfaces
 │   ├── phosphor.svg                umbrella brand mark (Φ)
+│   ├── phosphor-shell.svg          PhosphorShell library mark
 │   ├── plasmazones.svg             PlasmaZones app icon
 │   ├── plasmazones-editor.svg      PlasmaZones layout editor
 │   └── plasmazones-settings.svg    PlasmaZones settings
 └── light/                          near-white variants
     ├── phosphor.svg
+    ├── phosphor-shell.svg
     ├── plasmazones.svg
     ├── plasmazones-editor.svg
     └── plasmazones-settings.svg
@@ -31,6 +33,7 @@ inner fill.  The inner content distinguishes them:
 | Mark                   | Inner                                                        |
 |------------------------|--------------------------------------------------------------|
 | `phosphor`             | Φ — stylized flux symbol, umbrella brand.                    |
+| `phosphor-shell`       | Three nested rounded rectangles — containment framework wrapping inner surfaces. |
 | `plasmazones`          | Five stroked zones, the core tiling motif.                   |
 | `plasmazones-editor`   | Zone motif wrapped in a canvas mark.                         |
 | `plasmazones-settings` | Zone motif wrapped in a cog outline.                         |
