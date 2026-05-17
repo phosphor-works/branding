@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PhosphorShader brand mark (light variant).
+
+  A shader node graph — two input nodes feeding a rendered preview
+  swatch. The "edit the signal, see the light" motif of the
+  PhosphorShader shader editor. Shares the badge, gradient frame, and
+  stroke family with the rest of the Phosphor app marks.
+-->
+<svg width="1024" height="1024" viewBox="96 96 832 832" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">PhosphorShader</title>
+  <desc id="desc">A shader node graph in a gradient stroke — two input nodes feeding a rendered preview swatch, the editing motif of the PhosphorShader shader editor.</desc>
+  <defs>
+    <linearGradient id="gBorder" x1="120" y1="120" x2="904" y2="904" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0EA5E9"/>
+      <stop offset="0.45" stop-color="#3B82F6"/>
+      <stop offset="0.75" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#E11D48"/>
+    </linearGradient>
+
+    <!-- Light-variant inner panel uses the brand palette tinted
+         ~25% over the off-white base so the surface echoes the
+         border sweep instead of reading as a blank white card. -->
+    <linearGradient id="gBgLight" x1="120" y1="120" x2="904" y2="904" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#BCE4F9"/>
+      <stop offset="0.45" stop-color="#C7DBFC"/>
+      <stop offset="0.75" stop-color="#D7C9FA"/>
+      <stop offset="1" stop-color="#F0C2D1"/>
+    </linearGradient>
+
+    <!-- Foreground sits on the pastel-tinted panel — dropped two
+         shades to sky-800 / violet-900 / rose-800 so the node graph
+         stays high-contrast across the whole sweep. -->
+    <linearGradient id="gZones" x1="260" y1="300" x2="820" y2="820" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#075985"/>
+      <stop offset="0.55" stop-color="#4C1D95"/>
+      <stop offset="1" stop-color="#881337"/>
+    </linearGradient>
+
+    <filter id="fGlowLight" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feColorMatrix in="blur" type="matrix"
+        values="1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 0.45 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="fPanelShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feOffset dx="0" dy="10" in="SourceAlpha" result="off"/>
+      <feGaussianBlur stdDeviation="12" in="off" result="blur"/>
+      <feColorMatrix in="blur" type="matrix"
+        values="0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 0.18 0" result="shadow"/>
+      <feMerge>
+        <feMergeNode in="shadow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <clipPath id="clip">
+      <rect x="132" y="132" width="760" height="760" rx="170"/>
+    </clipPath>
+  </defs>
+
+  <rect x="96" y="96" width="832" height="832" rx="190" fill="url(#gBorder)"/>
+  <rect x="132" y="132" width="760" height="760" rx="170" fill="url(#gBgLight)" filter="url(#fPanelShadow)"/>
+
+  <g clip-path="url(#clip)">
+    <!-- Volumetric accent glows -->
+    <circle cx="320" cy="310" r="440" fill="#0EA5E9" opacity="0.10"/>
+    <circle cx="790" cy="580" r="460" fill="#7C3AED" opacity="0.10"/>
+    <circle cx="740" cy="360" r="390" fill="#E11D48" opacity="0.08"/>
+
+    <!-- Shader node graph: two input nodes (left) wired into a
+         rendered preview swatch (right). -->
+    <g filter="url(#fGlowLight)">
+      <path d="M406 375 C 479 375 479 512 552 512" stroke="url(#gZones)" stroke-width="14" fill="none" opacity="0.75" stroke-linecap="round"/>
+      <path d="M406 635 C 479 635 479 512 552 512" stroke="url(#gZones)" stroke-width="14" fill="none" opacity="0.75" stroke-linecap="round"/>
+
+      <rect x="236" y="300" width="170" height="150" rx="44" stroke="url(#gZones)" stroke-width="14" opacity="0.95"/>
+      <rect x="236" y="560" width="170" height="150" rx="44" stroke="url(#gZones)" stroke-width="14" opacity="0.85"/>
+
+      <!-- Rendered preview swatch — the shader output -->
+      <rect x="552" y="388" width="248" height="248" rx="60" fill="url(#gZones)" opacity="0.16"/>
+      <rect x="552" y="388" width="248" height="248" rx="60" stroke="url(#gZones)" stroke-width="14" opacity="0.98"/>
+
+      <!-- Connection ports -->
+      <circle cx="406" cy="375" r="20" fill="url(#gZones)"/>
+      <circle cx="406" cy="635" r="20" fill="url(#gZones)"/>
+      <circle cx="552" cy="512" r="20" fill="url(#gZones)"/>
+    </g>
+  </g>
+</svg>
