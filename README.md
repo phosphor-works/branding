@@ -13,12 +13,14 @@ blue / purple / rose gradient logos you see on
 svg/                                gradient logo marks
 ├── dark/                           assets tuned for dark surfaces
 │   ├── phosphor.svg                umbrella brand mark (Φ)
+│   ├── afterglow.svg               Afterglow terminal app icon
 │   ├── phosphor-shell.svg          PhosphorShell library mark
 │   ├── plasmazones.svg             PlasmaZones app icon
 │   ├── plasmazones-editor.svg      PlasmaZones layout editor
 │   └── plasmazones-settings.svg    PlasmaZones settings
 └── light/                          near-white variants
     ├── phosphor.svg
+    ├── afterglow.svg
     ├── phosphor-shell.svg
     ├── plasmazones.svg
     ├── plasmazones-editor.svg
@@ -50,6 +52,7 @@ inner fill.  The inner content distinguishes them:
 | `plasmazones`          | Five stroked zones, the core tiling motif.                   |
 | `plasmazones-editor`   | Zone motif wrapped in a canvas mark.                         |
 | `plasmazones-settings` | Zone motif wrapped in a cog outline.                         |
+| `afterglow`            | Prompt chevron and a block cursor trailing light, the glow a moving cursor leaves behind. |
 
 ## Color tokens
 
