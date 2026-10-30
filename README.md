@@ -52,7 +52,7 @@ inner fill.  The inner content distinguishes them:
 | `plasmazones`          | Five stroked zones, the core tiling motif.                   |
 | `plasmazones-editor`   | Zone motif wrapped in a canvas mark.                         |
 | `plasmazones-settings` | Zone motif wrapped in a cog outline.                         |
-| `afterglow`            | Prompt chevron and a block cursor trailing light, the glow a moving cursor leaves behind. |
+| `afterglow`            | Tapered A with a split elliptical crossbar, echoing the Phosphor mark. |
 
 ## Color tokens
 
