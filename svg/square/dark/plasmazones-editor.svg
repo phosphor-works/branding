@@ -54,20 +54,31 @@
     </clipPath>
   </defs>
 
+  <!-- Badge -->
   <rect x="96" y="96" width="832" height="832" rx="190" fill="url(#gBorder)"/>
   <rect x="132" y="132" width="760" height="760" rx="170" fill="url(#gBgDark)" filter="url(#fInnerShadow)"/>
 
   <g clip-path="url(#clip)">
-    <circle cx="320" cy="310" r="440" fill="#22D3EE" opacity="0.08"/>
-    <circle cx="790" cy="580" r="460" fill="#A855F7" opacity="0.10"/>
-    <circle cx="740" cy="360" r="390" fill="#F43F5E" opacity="0.06"/>
+    <!-- Ambient plasma (subtle) -->
+    <path data-glow="320 310 440" d="M722.4 132 A440 440 0 0 1 132 707.8 L132 302 A170 170 0 0 1 302 132 L722 132 A170 170 0 0 1 722.4 132 Z" fill="#22D3EE" opacity="0.08"/>
+    <path data-glow="790 580 460" d="M452 892 A460 460 0 0 1 685.6 132 L722 132 A170 170 0 0 1 892 302 L892 722 A170 170 0 0 1 722 892 L452 892 Z" fill="#A855F7" opacity="0.10"/>
+    <path data-glow="740 360 390" d="M892 719.2 A390 390 0 0 1 423.6 132 L722 132 A170 170 0 0 1 892 302 L892 719.2 Z" fill="#F43F5E" opacity="0.06"/>
 
+    <!-- Zones + selection brackets -->
     <g filter="url(#fGlow)">
+      <!-- Zones (same language as main icon) -->
       <rect x="272" y="288" width="188" height="448" rx="28" stroke="url(#gZones)" stroke-width="14" opacity="0.92"/>
       <rect x="484" y="288" width="268" height="252" rx="28" stroke="url(#gZones)" stroke-width="14" opacity="0.96"/>
       <rect x="484" y="564" width="168" height="172" rx="28" stroke="url(#gZones)" stroke-width="14" opacity="0.92"/>
       <rect x="676" y="564" width="76" height="78" rx="22" stroke="url(#gZones)" stroke-width="14" opacity="0.86"/>
       <rect x="676" y="658" width="76" height="78" rx="22" stroke="url(#gZones)" stroke-width="14" opacity="0.86"/>
+
+      <!-- Editor cue: corner brackets around the layout area (no surrounding inner border) -->
+      <!-- Layout bounds used for brackets: x=252..772, y=268..756 -->
+      <path d="M252 340 V268 H324" stroke="#EAF2FF" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.78"/>
+      <path d="M700 268 H772 V340" stroke="#EAF2FF" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.78"/>
+      <path d="M252 684 V756 H324" stroke="#EAF2FF" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.78"/>
+      <path d="M700 756 H772 V684" stroke="#EAF2FF" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.78"/>
     </g>
   </g>
 </svg>

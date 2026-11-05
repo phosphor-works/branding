@@ -10,21 +10,33 @@ blue / purple / rose gradient logos you see on
 ## Layout
 
 ```
-svg/                                gradient logo marks
-├── dark/                           assets tuned for dark surfaces
-│   ├── phosphor.svg                umbrella brand mark (Φ)
-│   ├── afterglow.svg               Afterglow terminal app icon
-│   ├── phosphor-shell.svg          PhosphorShell library mark
-│   ├── plasmazones.svg             PlasmaZones app icon
-│   ├── plasmazones-editor.svg      PlasmaZones layout editor
-│   └── plasmazones-settings.svg    PlasmaZones settings
-└── light/                          near-white variants
-    ├── phosphor.svg
-    ├── afterglow.svg
-    ├── phosphor-shell.svg
-    ├── plasmazones.svg
-    ├── plasmazones-editor.svg
-    └── plasmazones-settings.svg
+svg/                                brand icons, by shape then theme
+├── square/                         rounded-square framed icons (the sources)
+│   ├── dark/                       tuned for dark surfaces
+│   │   ├── phosphor.svg            umbrella brand mark (Φ)
+│   │   ├── lambent.svg             Lambent shell
+│   │   ├── afterglow.svg           Afterglow terminal
+│   │   ├── facet.svg               Facet settings manager
+│   │   ├── phosphor-shell.svg      PhosphorShell library mark
+│   │   ├── phosphor-shader.svg     PhosphorShader app icon
+│   │   ├── plasmazones.svg         PlasmaZones app icon
+│   │   ├── plasmazones-editor.svg  PlasmaZones layout editor
+│   │   └── plasmazones-settings.svg PlasmaZones settings
+│   └── light/                      the same set for light surfaces
+├── circle/                         round-framed variants, generated
+│   ├── dark/                       one per square/dark icon
+│   └── light/                      one per square/light icon
+└── mark/                           badge-free marks, no frame
+    ├── dark/                       gradient, for dark or transparent backgrounds
+    │   ├── phosphor.svg
+    │   ├── lambent.svg
+    │   └── facet.svg
+    ├── light/                      deep gradient, for light backgrounds
+    └── mono/                       single colour via currentColor
+
+scripts/
+└── variants.py                     glow fix for the framed icons + circle
+                                    variant generator (see below)
 
 palette/                            canonical brand palette
 ├── phosphor.toml                   static palette in matugen role vocabulary
@@ -40,10 +52,11 @@ matugen/                            wallpaper-reactive palette template
                                     from any wallpaper via Material You
 ```
 
-All marks share the same outer frame: a 1024 × 1024 SVG with
+All framed icons share the same outer frame: a 1024 × 1024 SVG with
 `viewBox="96 96 832 832"`, a 4-stop cyan → blue → purple → rose
-gradient border, and a radial navy (dark) or near-white (light)
-inner fill.  The inner content distinguishes them:
+gradient border, a radial navy (dark) or brand-tinted pastel (light)
+inner panel, and three soft accent glows.  The inner content
+distinguishes them:
 
 | Mark                   | Inner                                                        |
 |------------------------|--------------------------------------------------------------|
@@ -52,7 +65,34 @@ inner fill.  The inner content distinguishes them:
 | `plasmazones`          | Five stroked zones, the core tiling motif.                   |
 | `plasmazones-editor`   | Zone motif wrapped in a canvas mark.                         |
 | `plasmazones-settings` | Zone motif wrapped in a cog outline.                         |
+| `phosphor-shader`      | Two input nodes wired into an output node.                   |
+| `lambent`              | A curved L cradling a small flame.                           |
 | `afterglow`            | Tapered A with a split elliptical crossbar, echoing the Phosphor mark. |
+| `facet`                | A brilliant-cut gem seen from above: octagonal table, eight star facets. |
+
+## Circle variants and the glow fix
+
+`svg/circle/{dark,light}/` holds a round-framed copy of every framed
+icon (avatars, Discord, social cards).  The rounded square becomes a
+circle with the same 36-unit border (outer radius 416, panel radius
+380) and the artwork is unchanged.  These files are generated; edit
+the square icon and re-run the script.
+
+The accent glows are circles larger than the panel.  Browsers and
+librsvg trim them with a `clipPath`, but QtSvg, which KDE uses to draw
+icons, ignores `clipPath`, so the glows used to tint the transparent
+corners outside the frame.  Each glow is now stored as its exact
+intersection with the panel (square or circle), with its source circle
+kept in `data-glow="cx cy r"`, so no renderer can draw it outside.
+
+```sh
+python3 scripts/variants.py           # fix glows in svg/square, regenerate svg/circle
+python3 scripts/variants.py --check   # exit 1 if anything is out of date
+```
+
+Run it after adding or editing a framed icon.  A new icon can keep the
+plain glow `<circle>` elements from the template; the script converts
+them.
 
 ## Color tokens
 
@@ -124,7 +164,8 @@ git submodule update --init --recursive
 **One-off download:** `curl` the raw SVG:
 
 ```sh
-curl -O https://raw.githubusercontent.com/phosphor-works/branding/main/svg/dark/phosphor.svg
+curl -O https://raw.githubusercontent.com/phosphor-works/branding/main/svg/square/dark/phosphor.svg
+curl -O https://raw.githubusercontent.com/phosphor-works/branding/main/svg/circle/dark/phosphor.svg
 ```
 
 ## License

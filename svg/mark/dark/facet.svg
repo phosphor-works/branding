@@ -1,0 +1,19 @@
+<!-- SPDX-FileCopyrightText: 2026 fuddlesworth -->
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
+<svg viewBox="220 220 584 584" xmlns="http://www.w3.org/2000/svg" fill="none" role="img" aria-labelledby="title">
+  <title id="title">Facet</title>
+  <!-- Facet mark: flat gradient, badge-free. Pair with a dark or transparent background. -->
+  <defs><linearGradient id="m" x1="230" y1="200" x2="800" y2="830" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#22D3EE"/><stop offset="0.40" stop-color="#3B82F6"/><stop offset="0.72" stop-color="#A855F7"/><stop offset="1" stop-color="#F43F5E"/></linearGradient></defs>
+  <g fill="url(#m)">
+    <path d="M554.7 408.9 L615.1 469.3 L615.1 554.7 L554.7 615.1 L469.3 615.1 L408.9 554.7 L408.9 469.3 L469.3 408.9 Z" opacity="0.95"/>
+    <path d="M469.3 392.2 L512.0 250.5 L554.7 392.2 Z"/>
+    <path d="M566.5 397.1 L696.9 327.1 L626.9 457.5 Z"/>
+    <path d="M631.8 469.3 L773.5 512.0 L631.8 554.7 Z"/>
+    <path d="M626.9 566.5 L696.9 696.9 L566.5 626.9 Z"/>
+    <path d="M554.7 631.8 L512.0 773.5 L469.3 631.8 Z"/>
+    <path d="M457.5 626.9 L327.1 696.9 L397.1 566.5 Z"/>
+    <path d="M392.2 554.7 L250.5 512.0 L392.2 469.3 Z"/>
+    <path d="M397.1 457.5 L327.1 327.1 L457.5 397.1 Z"/>
+  </g>
+  <path d="M512.0 240.0 L704.3 319.7 L784.0 512.0 L704.3 704.3 L512.0 784.0 L319.7 704.3 L240.0 512.0 L319.7 319.7 Z" stroke="url(#m)" stroke-width="8" stroke-linejoin="round" opacity="0.45"/>
+</svg>
