@@ -1,4 +1,6 @@
-<svg viewBox="96 96 832 832" xmlns="http://www.w3.org/2000/svg" fill="none" aria-label="Phosphor logo (light)">
+<svg viewBox="96 96 832 832" xmlns="http://www.w3.org/2000/svg" fill="none" aria-label="Phosphor logo (light)" role="img" aria-labelledby="title desc">
+  <title id="title">Phosphor</title>
+  <desc id="desc">The Phosphor brand mark. A stylized flux symbol inside a gradient frame.</desc>
     <defs>
         <linearGradient id="pzl-border" x1="120" y1="120" x2="904" y2="904" gradientUnits="userSpaceOnUse">
             <stop offset="0"    stop-color="#0EA5E9"/>
