@@ -1,0 +1,34 @@
+# SPDX-FileCopyrightText: 2026 fuddlesworth
+# SPDX-License-Identifier: CC-BY-SA-4.0
+#
+# A tag vX.Y.Z publishes phosphor-branding-X.Y.Z.tar.gz and its .sha256 as a
+# GitHub release. Apps pin that archive by version, URL and SHA-256 and
+# install their icons with its cmake/PhosphorBranding.cmake.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install librsvg
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends librsvg2-bin
+      - name: Build the archive
+        run: scripts/build-release.sh "${GITHUB_REF_NAME#v}" dist
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          gh release create "$GITHUB_REF_NAME" \
+            "dist/phosphor-branding-${version}.tar.gz" \
+            "dist/phosphor-branding-${version}.tar.gz.sha256" \
+            --title "Branding ${version}" \
+            --notes "Icons, palette and matugen template for the Phosphor suite. Pin \`phosphor-branding-${version}.tar.gz\` by its SHA-256 and install icons with \`cmake/PhosphorBranding.cmake\`."

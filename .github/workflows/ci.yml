@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: 2026 fuddlesworth
+# SPDX-License-Identifier: CC-BY-SA-4.0
+#
+# Every push and PR: the icons are accessible and their circle variants are
+# current, and the release archive still builds.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install librsvg
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends librsvg2-bin
+      - name: Check icons
+        run: python3 scripts/check.py
+      - name: Build the release archive
+        run: scripts/build-release.sh "0.0.0-ci" dist

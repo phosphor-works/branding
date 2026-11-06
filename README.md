@@ -36,8 +36,15 @@ svg/                                brand icons, by shape then theme
     └── mono/                       single colour via currentColor
 
 scripts/
-└── variants.py                     glow fix for the framed icons + circle
-                                    variant generator (see below)
+├── variants.py                     glow fix for the framed icons + circle
+│                                   variant generator (see below)
+├── check.py                        accessibility and prose check for the
+│                                   framed icons, run by CI
+└── build-release.sh                builds the release archive apps pin
+
+cmake/
+└── PhosphorBranding.cmake          phosphor_install_brand_icons(), shipped
+                                    in the release archive
 
 palette/                            canonical brand palette
 ├── phosphor.toml                   static palette in matugen role vocabulary
@@ -70,6 +77,36 @@ distinguishes them:
 | `lambent`              | A curved L cradling a small flame.                           |
 | `afterglow`            | Tapered A with a split elliptical crossbar, echoing the Phosphor mark. |
 | `facet`                | A brilliant-cut gem seen from above: octagonal table, eight star facets. |
+
+## Releases and installing icons
+
+Apps don't copy icons. Each pins a branding release by version, URL and
+SHA-256 and installs its icons from the archive. A tag `vX.Y.Z` publishes
+`phosphor-branding-X.Y.Z.tar.gz`:
+
+```
+phosphor-branding-X.Y.Z/
+├── hicolor/scalable/apps/<name>.svg       square/dark, for dark themes
+├── hicolor/<N>x<N>/apps/<name>.png        16, 22, 24, 32, 48, 64, 128, 256, 512
+├── hicolor-light/...                      the same from square/light
+├── palette/  matugen/templates/
+├── cmake/PhosphorBranding.cmake
+├── LICENSE  VERSION
+```
+
+An app installs each icon under its own app ID, which is also its `.desktop`
+id and AppStream id:
+
+```cmake
+include(${branding_SOURCE_DIR}/cmake/PhosphorBranding.cmake)
+phosphor_install_brand_icons(org.phosphor_works.PlasmaZones plasmazones
+                             org.phosphor_works.PlasmaZones.Editor plasmazones-editor)
+```
+
+`scripts/build-release.sh <version> <out dir>` builds the same archive
+locally. It is reproducible for a given librsvg, and it runs
+`scripts/check.py` first, which requires every framed icon to carry a
+`<title>` and a `<desc>` in plain prose, since screen readers announce both.
 
 ## Circle variants and the glow fix
 

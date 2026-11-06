@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="1024" height="1024" viewBox="96 96 832 832" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="1024" height="1024" viewBox="96 96 832 832" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">PlasmaZones Editor</title>
+  <desc id="desc">Icon for the PlasmaZones layout editor, where zone layouts are created and arranged. The zone motif sits on a canvas inside a gradient frame.</desc>
   <defs>
     <!-- Light-variant border uses the Phosphor light palette accents
          (sky-500 → blue-500 → violet-600 → rose-600). -->
