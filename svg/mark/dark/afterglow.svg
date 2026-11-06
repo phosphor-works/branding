@@ -1,0 +1,13 @@
+<!-- SPDX-FileCopyrightText: 2026 fuddlesworth -->
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
+<svg viewBox="202 202 620 620" xmlns="http://www.w3.org/2000/svg" fill="none" role="img" aria-labelledby="title">
+  <title id="title">Afterglow</title>
+  <!-- Afterglow mark: flat gradient, badge-free. Pair with a dark or transparent background. -->
+  <defs><linearGradient id="m" x1="330" y1="250" x2="694" y2="780" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#22D3EE"/><stop offset="0.55" stop-color="#A855F7"/><stop offset="1" stop-color="#F43F5E"/></linearGradient></defs>
+  <g fill="url(#m)">
+    <path d="M512 230 C484 410 394 650 286 794 C336 614 424 374 512 230 Z"/>
+    <path d="M512 230 C600 374 688 614 738 794 C630 650 540 410 512 230 Z"/>
+    <path d="M298 486 C340 564 416 600 492 604 C478 620 466 628 450 626 C372 616 312 566 298 486 Z"/>
+    <path d="M532 604 C608 600 684 564 726 486 C712 566 652 616 574 626 C558 628 546 620 532 604 Z"/>
+  </g>
+</svg>

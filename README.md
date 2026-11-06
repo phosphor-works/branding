@@ -30,6 +30,7 @@ svg/                                brand icons, by shape then theme
     ├── dark/                       gradient, for dark or transparent backgrounds
     │   ├── phosphor.svg
     │   ├── lambent.svg
+    │   ├── afterglow.svg
     │   └── facet.svg
     ├── light/                      deep gradient, for light backgrounds
     └── mono/                       single colour via currentColor
