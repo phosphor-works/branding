@@ -34,12 +34,18 @@ svg/                                brand icons, by shape then theme
     │   └── facet.svg
     ├── light/                      deep gradient, for light backgrounds
     └── mono/                       single colour via currentColor
+└── mascot/                         mascot candidates, generated (see below)
+    ├── glim.svg                    standalone, transparent background
+    ├── wisp.svg
+    ├── nocti.svg
+    └── avatar/                     the same on a navy disc, for bot avatars
 
 scripts/
 ├── variants.py                     glow fix for the framed icons + circle
 │                                   variant generator (see below)
 ├── check.py                        accessibility and prose check for the
 │                                   framed icons, run by CI
+├── mascots.py                      generates svg/mascot
 └── build-release.sh                builds the release archive apps pin
 
 cmake/
@@ -77,6 +83,22 @@ distinguishes them:
 | `lambent`              | A curved L cradling a small flame.                           |
 | `afterglow`            | Tapered A with a split elliptical crossbar, echoing the Phosphor mark. |
 | `facet`                | A brilliant-cut gem seen from above: octagonal table, eight star facets. |
+
+## Mascots
+
+Three candidates for the Phosphor mascot and Discord bot, all drawn in
+the brand palette on 512 × 512 canvases:
+
+| Mascot  | Character                                                                 |
+|---------|---------------------------------------------------------------------------|
+| `glim`  | A firefly in flight: rose edged wing covers lifted open over translucent wings, lit by a cyan lantern tail. |
+| `wisp`  | A will o the wisp: layered rose, purple, blue and cyan flame with a curling tail and drifting embers. |
+| `nocti` | A bioluminescent jellyfish whose bell glows with the four crescents of the Phosphor mark. |
+
+The tentacles, ribbons and rim lights are computed, so edit
+`scripts/mascots.py` rather than the SVGs and rerun it. The avatar
+variants leave room for Discord's round crop. Render one for upload with
+`rsvg-convert -w 1024 svg/mascot/avatar/glim.svg -o glim.png`.
 
 ## Releases and installing icons
 
