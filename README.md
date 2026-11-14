@@ -38,7 +38,7 @@ svg/                                brand icons, by shape then theme
     ├── glim.svg                    standalone, transparent background
     ├── wisp.svg
     ├── nocti.svg
-    └── avatar/                     the same on a navy disc, for bot avatars
+    └── avatar/                     the same inside the gradient ring, for bot avatars
 
 scripts/
 ├── variants.py                     glow fix for the framed icons + circle
@@ -92,12 +92,15 @@ the brand palette on 512 × 512 canvases:
 | Mascot  | Character                                                                 |
 |---------|---------------------------------------------------------------------------|
 | `glim`  | A firefly in flight: rose edged wing covers lifted open over translucent wings, lit by a cyan lantern tail. |
-| `wisp`  | A will o the wisp: layered rose, purple, blue and cyan flame with a curling tail and drifting embers. |
-| `nocti` | A bioluminescent jellyfish whose bell glows with the four crescents of the Phosphor mark. |
+| `wisp`  | A will o the wisp: a rose, purple, blue and cyan flame with a white hot core, a curling tail and drifting embers. |
+| `nocti` | A bioluminescent jellyfish with the Phosphor mark glowing on the crown of its bell. |
 
-The tentacles, ribbons and rim lights are computed, so edit
+The bodies, tentacles, ribbons and rim lights are computed, so edit
 `scripts/mascots.py` rather than the SVGs and rerun it. The avatar
-variants leave room for Discord's round crop. Render one for upload with
+variants sit inside the same gradient ring as `svg/circle`, framed so
+the face stays readable at Discord's smallest sizes after the round
+crop (`FIT` in the script sets each one's framing). Render one for
+upload with
 `rsvg-convert -w 1024 svg/mascot/avatar/glim.svg -o glim.png`.
 
 ## Releases and installing icons

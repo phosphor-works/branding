@@ -4,9 +4,10 @@
 """Generate the Phosphor mascots: Glim, Wisp and Nocti.
 
 Each mascot is drawn as a standalone mark on a transparent background
-(svg/mascot/<name>.svg) and as a Discord style avatar on a deep navy disc
-(svg/mascot/avatar/<name>.svg). The tentacles, ribbons and rim lights are
-computed, so edit this script rather than the SVGs, then run:
+(svg/mascot/<name>.svg) and as a Discord style avatar inside the suite's
+gradient ring (svg/mascot/avatar/<name>.svg). The bodies, tentacles, ribbons
+and rim lights are computed, so edit this script rather than the SVGs, then
+run:
 
     python3 scripts/mascots.py
 """
@@ -16,23 +17,39 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "svg" / "mascot"
-(OUT / "avatar").mkdir(parents=True, exist_ok=True)
 
 CYAN, BLUE, PURPLE, ROSE = "#22D3EE", "#3B82F6", "#A855F7", "#F43F5E"
 NAVY, ABYSS, VOID = "#0B1730", "#070F22", "#050916"
+INK = "#1E1B4B"
 
-# The four crescents of the Phosphor mark, from svg/mark/dark/phosphor.svg.
+# The Phosphor mark, from svg/mark/dark/phosphor.svg: a spindle and four crescents.
+PHI_SPINDLE = "M512 206 C540 372 540 652 512 818 C484 652 484 372 512 206 Z"
 PHI_ARCS = [
     "M583 358L598 362L612 367L626 374L639 381L652 389L664 398L676 408L686 419L695 431L703 444L709 458L714 472L716 487L714 502L702 516L689 504L685 492L681 480L678 469L674 457L669 446L664 434L658 423L650 412L641 401L632 391L621 382L609 373L597 365L583 358Z",
     "M696 553L706 571L704 588L698 603L690 618L680 631L668 643L654 653L640 661L624 669L608 674L592 678L575 681L559 682L541 676L555 665L569 658L582 651L594 643L605 635L616 626L626 617L635 607L643 598L652 589L660 579L668 570L678 560L696 553Z",
     "M483 676L465 682L449 681L432 678L416 674L400 669L384 661L370 653L356 643L344 631L334 618L326 603L320 588L318 571L328 553L346 560L356 570L364 579L372 589L381 598L389 607L398 617L408 626L419 635L430 643L442 651L455 658L469 665L483 676Z",
     "M322 516L310 502L308 487L310 472L315 458L321 444L329 431L338 419L348 408L360 398L372 389L385 381L398 374L412 367L426 362L441 358L427 365L415 373L403 382L392 391L383 401L374 412L366 423L360 434L355 446L350 457L346 469L343 480L339 492L335 504L322 516Z",
 ]
-PHI_SPINDLE = "M512 206 C540 372 540 652 512 818 C484 652 484 372 512 206 Z"
 
 
 def f(x):
     return f"{x:.1f}".rstrip("0").rstrip(".")
+
+
+def smooth(pts, closed=False, k=1 / 6):
+    """A Catmull-Rom spline through pts, written as cubic Beziers."""
+    n = len(pts)
+
+    def at(i):
+        return pts[i % n] if closed else pts[max(0, min(n - 1, i))]
+
+    d = f"M{f(pts[0][0])} {f(pts[0][1])}"
+    for i in range(n if closed else n - 1):
+        p0, p1, p2, p3 = at(i - 1), at(i), at(i + 1), at(i + 2)
+        d += (f" C{f(p1[0] + (p2[0] - p0[0]) * k)} {f(p1[1] + (p2[1] - p0[1]) * k)}"
+              f" {f(p2[0] - (p3[0] - p1[0]) * k)} {f(p2[1] - (p3[1] - p1[1]) * k)}"
+              f" {f(p2[0])} {f(p2[1])}")
+    return d + ("Z" if closed else "")
 
 
 def blur(id_, sd):
@@ -42,42 +59,393 @@ def blur(id_, sd):
 
 def star(cx, cy, r, fill, op=1.0):
     """Four point sparkle."""
-    k = r * 0.22
+    k = r * 0.2
     d = (f"M{f(cx)} {f(cy-r)} Q{f(cx+k)} {f(cy-k)} {f(cx+r)} {f(cy)} "
          f"Q{f(cx+k)} {f(cy+k)} {f(cx)} {f(cy+r)} Q{f(cx-k)} {f(cy+k)} {f(cx-r)} {f(cy)} "
          f"Q{f(cx-k)} {f(cy-k)} {f(cx)} {f(cy-r)}Z")
     return f'<path d="{d}" fill="{fill}" opacity="{op}"/>'
 
 
-def eye(p, n, cx, cy, rx, ry, look=(0, 0), dark=False):
-    """A simple stylised eye: a dark oval, two catchlights and a faint glow
-    reflected along its lower edge. dark=True adds a soft halo so the eye
-    holds against a bright surface. look is kept for call compatibility."""
-    rx, ry = rx * .78, ry * .92
+def eye(p, n, cx, cy, rx, ry, halo=False):
+    """A stylised eye: a dark oval, a glow reflected along its lower edge and
+    two catchlights. halo=True adds a soft light ring so the eye holds
+    against a bright surface."""
     cid = f"{p}eye{n}"
-    s = [f'<defs><clipPath id="{cid}"><ellipse cx="{f(cx)}" cy="{f(cy)}" rx="{f(rx)}" ry="{f(ry)}"/></clipPath></defs>']
-    if dark:
-        s.append(f'<ellipse cx="{f(cx)}" cy="{f(cy)}" rx="{f(rx+5)}" ry="{f(ry+5)}" fill="#ECFEFF" opacity=".6" filter="url(#{p}b3)"/>')
+    s = [f'<clipPath id="{cid}"><ellipse cx="{f(cx)}" cy="{f(cy)}" rx="{f(rx)}" ry="{f(ry)}"/></clipPath>']
+    if halo:
+        s.append(f'<ellipse cx="{f(cx)}" cy="{f(cy)}" rx="{f(rx+5)}" ry="{f(ry+5)}" fill="#ECFEFF" opacity=".7" filter="url(#{p}b3)"/>')
     s.append(f'<ellipse cx="{f(cx)}" cy="{f(cy)}" rx="{f(rx)}" ry="{f(ry)}" fill="url(#{p}pupil)"/>')
     s.append(f'<g clip-path="url(#{cid})">'
-             f'<ellipse cx="{f(cx)}" cy="{f(cy+ry*1.05)}" rx="{f(rx*.9)}" ry="{f(ry*.5)}" fill="{CYAN}" opacity=".55" filter="url(#{p}b3)"/></g>')
-    s.append(f'<ellipse cx="{f(cx-rx*.28)}" cy="{f(cy-ry*.36)}" rx="{f(rx*.34)}" ry="{f(ry*.26)}" fill="#fff"/>')
-    s.append(f'<circle cx="{f(cx+rx*.3)}" cy="{f(cy+ry*.18)}" r="{f(rx*.13)}" fill="#fff" opacity=".8"/>')
+             f'<ellipse cx="{f(cx)}" cy="{f(cy+ry*.95)}" rx="{f(rx*.95)}" ry="{f(ry*.5)}" fill="{PURPLE}" opacity=".55" filter="url(#{p}b3)"/>'
+             f'<ellipse cx="{f(cx)}" cy="{f(cy+ry*1.1)}" rx="{f(rx*.8)}" ry="{f(ry*.42)}" fill="{CYAN}" opacity=".8" filter="url(#{p}b3)"/></g>')
+    s.append(f'<ellipse cx="{f(cx-rx*.3)}" cy="{f(cy-ry*.36)}" rx="{f(rx*.38)}" ry="{f(ry*.3)}" fill="#fff"/>')
+    s.append(f'<circle cx="{f(cx+rx*.34)}" cy="{f(cy+ry*.2)}" r="{f(rx*.16)}" fill="#fff" opacity=".85"/>')
     return "".join(s)
 
 
-def eye_defs(p):
+def smile(cx, cy, w, col=INK, op=.85):
+    return (f'<path d="M{f(cx-w)} {f(cy)} Q{f(cx)} {f(cy+w*.95)} {f(cx+w)} {f(cy)}" stroke="{col}" '
+            f'stroke-width="{f(w*.36)}" stroke-linecap="round" opacity="{op}"/>')
+
+
+def blush(p, cx, cy, rx, ry, op=.5):
+    return f'<ellipse cx="{f(cx)}" cy="{f(cy)}" rx="{f(rx)}" ry="{f(ry)}" fill="{ROSE}" opacity="{op}" filter="url(#{p}b3)"/>'
+
+
+def common_defs(p):
     return (
-        f'<radialGradient id="{p}pupil" cx=".45" cy=".35" r=".75"><stop offset="0" stop-color="#1E2A55"/>'
-        f'<stop offset="1" stop-color="{VOID}"/></radialGradient>'
-        + blur(f"{p}b3", 3)
+        f'<radialGradient id="{p}pupil" cx=".42" cy=".3" r=".8"><stop offset="0" stop-color="#27346B"/>'
+        f'<stop offset=".7" stop-color="#0B1030"/><stop offset="1" stop-color="{VOID}"/></radialGradient>'
+        + blur(f"{p}b3", 3) + blur(f"{p}b6", 6) + blur(f"{p}b12", 12) + blur(f"{p}b24", 24)
     )
 
 
-def svg(title, desc, body, defs):
+# ── Glim, the firefly ────────────────────────────────────────────────────────
+
+def glim():
+    p = "gl-"
+    HX, HY, HR = 186, 226, 94
+
+    # The body is one egg from under the head to the lantern tip: an axis
+    # with a half width profile, fatter toward the tail.
+    ax0, ay0, ax1, ay1 = 232, 258, 400, 410
+    dx, dy = ax1 - ax0, ay1 - ay0
+    length = math.hypot(dx, dy)
+    ux, uy = dx / length, dy / length
+    nx, ny = -uy, ux                      # toward the belly
+
+    def half(t):
+        return 76 * (2 * math.sqrt(t * (1 - t))) ** .8 * (.56 + .44 * t)
+
+    def on(t, side=0.0):
+        w = half(t) * side
+        return ax0 + dx * t + nx * w, ay0 + dy * t + ny * w
+
+    N = 40
+    ts = [(1 - math.cos(math.pi * i / N)) / 2 for i in range(N + 1)]
+    body = smooth([on(t, -1) for t in ts] + [on(t, 1) for t in ts[::-1]][1:-1], closed=True)
+
+    def leaf(L, W):
+        """A wing in its own frame: hinge at the origin, tip along +x."""
+        return (f"M0 0 C{f(.16*L)} {f(-.8*W)} {f(.6*L)} {f(-1.08*W)} {f(.9*L)} {f(-.6*W)} "
+                f"C{f(1.05*L)} {f(-.34*W)} {f(1.04*L)} {f(.16*W)} {f(.9*L)} {f(.32*W)} "
+                f"C{f(.6*L)} {f(.62*W)} {f(.2*L)} {f(.42*W)} 0 0Z")
+
+    JX, JY = 258, 250                     # wing hinge, on the back behind the head
+
+    def hinge(a):
+        return f'transform="translate({JX} {JY}) rotate({a})"'
+
+    lx, ly = on(.8)
+    defs = common_defs(p) + f"""
+<radialGradient id="{p}halo" cx="{f(lx)}" cy="{f(ly)}" r="250" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="{CYAN}" stop-opacity=".55"/><stop offset=".35" stop-color="{CYAN}" stop-opacity=".2"/>
+  <stop offset=".7" stop-color="{BLUE}" stop-opacity=".07"/><stop offset="1" stop-color="{PURPLE}" stop-opacity="0"/></radialGradient>
+<radialGradient id="{p}head" cx=".36" cy=".28" r=".85">
+  <stop offset="0" stop-color="#C3D5FF"/><stop offset=".32" stop-color="#8FA3FA"/>
+  <stop offset=".72" stop-color="#5B5FE8"/><stop offset="1" stop-color="#3F2FB8"/></radialGradient>
+<linearGradient id="{p}body" x1="{ax0}" y1="{ay0}" x2="{ax1}" y2="{ay1}" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#4F46E5"/><stop offset=".3" stop-color="#6D28D9"/><stop offset=".46" stop-color="#8B3FE0"/>
+  <stop offset=".6" stop-color="#4FB4F0"/><stop offset=".76" stop-color="#A5F3FC"/><stop offset="1" stop-color="#FFFFFF"/></linearGradient>
+<radialGradient id="{p}lamp" cx="{f(lx)}" cy="{f(ly)}" r="92" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#FFFFFF"/><stop offset=".35" stop-color="#E0FCFF" stop-opacity=".95"/>
+  <stop offset=".7" stop-color="{CYAN}" stop-opacity=".5"/><stop offset="1" stop-color="{CYAN}" stop-opacity="0"/></radialGradient>
+<linearGradient id="{p}ely" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#A78BFA"/><stop offset=".45" stop-color="#6D28D9"/><stop offset="1" stop-color="#3B1A8C"/></linearGradient>
+<linearGradient id="{p}elyF" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#5B21B6"/><stop offset="1" stop-color="#2E1A6E"/></linearGradient>
+<linearGradient id="{p}wing" x1="0" y1="1" x2="1" y2="0">
+  <stop offset="0" stop-color="#A5F3FC" stop-opacity=".7"/><stop offset=".55" stop-color="#93C5FD" stop-opacity=".36"/>
+  <stop offset="1" stop-color="#DDD6FE" stop-opacity=".3"/></linearGradient>
+<linearGradient id="{p}ant" x1="0" y1="1" x2="0" y2="0">
+  <stop offset="0" stop-color="#5B5FE8"/><stop offset="1" stop-color="#C4B5FD"/></linearGradient>
+<clipPath id="{p}bodyc"><path d="{body}"/></clipPath>
+<clipPath id="{p}headc"><circle cx="{HX}" cy="{HY}" r="{HR}"/></clipPath>
+"""
+    b = [f'<circle cx="{f(lx)}" cy="{f(ly)}" r="250" fill="url(#{p}halo)"/>']
+
+    # light trail drifting off behind the lantern
+    for x, y, r, o in ((440, 446, 6, .9), (460, 466, 4.2, .65), (476, 482, 3, .45), (420, 466, 3, .5)):
+        b.append(f'<circle cx="{x}" cy="{y}" r="{f(r*2.6)}" fill="{CYAN}" opacity="{f(o*.45)}" filter="url(#{p}b6)"/>')
+        b.append(f'<circle cx="{x}" cy="{y}" r="{f(r)}" fill="#ECFEFF" opacity="{f(o)}"/>')
+
+    # wings fan up from one hinge: far membrane, far cover, near membrane
+    def membrane(a, L, W, op):
+        d = leaf(L, W)
+        veins = "".join(
+            f'<path d="M4 0 C{f(L*.3)} {f(v*W*.7)} {f(L*.6)} {f(v*W)} {f(L*.88)} {f(v*W*.8)}" stroke="#ECFEFF" '
+            f'stroke-width="1.3" stroke-opacity=".4" stroke-linecap="round"/>' for v in (-.62, -.18, .2))
+        return (f'<g {hinge(a)} opacity="{op}"><path d="{d}" fill="url(#{p}wing)"/>{veins}'
+                f'<path d="{d}" stroke="#E0F2FE" stroke-width="2" stroke-opacity=".75" stroke-linejoin="round"/></g>')
+
+    b.append(membrane(-72, 176, 50, .7))
+    b.append(f'<path {hinge(-54)} d="{leaf(128, 36)}" fill="url(#{p}elyF)" stroke="#8B5CF6" stroke-width="1.6" stroke-opacity=".6"/>')
+    b.append(membrane(-36, 214, 60, 1))
+
+    # legs, tucked under the body
+    for t, reach in ((.17, 26), (.31, 30), (.45, 27)):
+        x0, y0 = on(t, .8)
+        x1, y1 = x0 + nx * reach - 2, y0 + ny * reach + 12
+        d = f"M{f(x0)} {f(y0)} Q{f(x0+nx*reach*.55+ux*11)} {f(y0+ny*reach*.55+uy*11)} {f(x1)} {f(y1)}"
+        b.append(f'<path d="{d}" stroke="#4338CA" stroke-width="7" stroke-linecap="round"/>')
+        b.append(f'<circle cx="{f(x1)}" cy="{f(y1)}" r="4.6" fill="#6366F1"/>')
+
+    # body: lantern bloom, the lit form, then shading clipped to it
+    b.append(f'<circle cx="{f(lx)}" cy="{f(ly)}" r="78" fill="{CYAN}" opacity=".8" filter="url(#{p}b24)"/>')
+    b.append(f'<path d="{body}" fill="url(#{p}body)"/>')
+    b.append(f'<g clip-path="url(#{p}bodyc)">')
+    bx, by = on(.36, .95)
+    ex, ey = on(.56, .95)
+    b.append(f'<path d="M{f(on(.1,.9)[0])} {f(on(.1,.9)[1])} Q{f(bx)} {f(by)} {f(ex)} {f(ey)}" stroke="{VOID}" stroke-width="44" stroke-linecap="round" opacity=".42" filter="url(#{p}b12)"/>')
+    hx0, hy0 = on(.18, -.62)
+    hx1, hy1 = on(.46, -.66)
+    b.append(f'<path d="M{f(hx0)} {f(hy0)} L{f(hx1)} {f(hy1)}" stroke="#E9D5FF" stroke-width="16" stroke-linecap="round" opacity=".4" filter="url(#{p}b6)"/>')
+    b.append(f'<circle cx="{f(lx)}" cy="{f(ly)}" r="92" fill="url(#{p}lamp)"/>')
+    # lantern segments, crossing the body and bowed toward the tail
+    for t, col, o, w in ((.5, INK, .5, 3.4), (.64, "#0E7490", .42, 3), (.78, "#0891B2", .3, 2.6)):
+        a, c, e = on(t, -1.02), on(t + .075), on(t, 1.02)
+        b.append(f'<path d="M{f(a[0])} {f(a[1])} Q{f(c[0])} {f(c[1])} {f(e[0])} {f(e[1])}" stroke="{col}" stroke-width="{w}" opacity="{o}" stroke-linecap="round"/>')
+    # shade where the head overhangs
+    b.append(f'<circle cx="{HX+10}" cy="{HY+12}" r="{HR+4}" fill="{VOID}" opacity=".5" filter="url(#{p}b12)"/>')
+    b.append('</g>')
+    # rim light around the lantern end
+    rim = smooth([on(t, -1) for t in ts if t > .6] + [on(t, 1) for t in ts[::-1][1:] if t > .7])
+    b.append(f'<path d="{rim}" stroke="#ECFEFF" stroke-width="2.4" stroke-linecap="round" opacity=".75"/>')
+
+    # near wing cover: glossy, rose edged, lifted clear of the back
+    ely = leaf(150, 44)
+    b.append(f'<g {hinge(-13)}><path d="{ely}" fill="url(#{p}ely)"/>'
+             f'<path d="M22 -14 C54 -34 98 -38 130 -24" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".45" filter="url(#{p}b3)"/>'
+             f'<path d="M30 -17 C58 -31 92 -34 118 -26" stroke="#F5F3FF" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>'
+             f'<path d="M40 22 C78 30 116 24 140 8" stroke="{CYAN}" stroke-width="8" stroke-linecap="round" opacity=".45" filter="url(#{p}b6)"/>'
+             f'<path d="{ely}" stroke="{ROSE}" stroke-width="2.4" stroke-opacity=".85" stroke-linejoin="round"/></g>')
+
+    # antennae
+    for d, tip, col in (("M158 142 C150 108 132 86 100 80", (100, 80), CYAN),
+                        ("M204 136 C204 100 216 74 244 58", (244, 58), ROSE)):
+        b.append(f'<path d="{d}" stroke="url(#{p}ant)" stroke-width="6" stroke-linecap="round"/>')
+        x, y = tip
+        b.append(f'<circle cx="{x}" cy="{y}" r="20" fill="{col}" opacity=".6" filter="url(#{p}b6)"/>')
+        b.append(f'<circle cx="{x}" cy="{y}" r="9" fill="{col}"/>')
+        b.append(f'<circle cx="{x-2.5}" cy="{y-2.5}" r="3.2" fill="#fff" opacity=".9"/>')
+
+    # head
+    b.append(f'<circle cx="{HX}" cy="{HY}" r="{HR}" fill="url(#{p}head)"/>')
+    b.append(f'<g clip-path="url(#{p}headc)">'
+             f'<ellipse cx="{HX-34}" cy="{HY-52}" rx="50" ry="30" fill="#fff" opacity=".3" filter="url(#{p}b12)"/>'
+             f'<circle cx="{HX+70}" cy="{HY+78}" r="46" fill="{CYAN}" opacity=".5" filter="url(#{p}b24)"/></g>')
+    b.append(f'<path d="M{HX-80} {HY-34} A{HR-6} {HR-6} 0 0 1 {HX-22} {HY-84}" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".55"/>')
+    b.append(blush(p, HX - 58, HY + 40, 15, 8))
+    b.append(blush(p, HX + 44, HY + 44, 15, 8))
+    b.append(eye(p, 1, HX - 36, HY + 8, 18, 24))
+    b.append(eye(p, 2, HX + 26, HY + 11, 18, 24))
+    b.append(smile(HX - 5, HY + 42, 9))
+
+    b.append(star(84, 352, 10, "#CFFAFE", .6))
+    b.append(star(452, 96, 8, "#E9D5FF", .55))
+    b.append(star(330, 46, 5, "#CFFAFE", .4))
+    return ("Glim", "A glowing firefly in flight: rose edged wing covers lifted open over translucent wings, and a bright cyan lantern at its tail.",
+            defs, "".join(b))
+
+
+# ── Wisp, the will-o'-the-wisp ───────────────────────────────────────────────
+
+def wisp():
+    p = "wi-"
+    outer = ("M256 454 C192 454 140 404 140 338 C140 290 168 262 182 222 C190 198 188 172 176 146 "
+             "C206 160 228 186 236 218 C228 160 232 98 270 38 C276 100 318 138 322 200 "
+             "C334 182 342 158 338 128 C366 170 372 262 372 338 C372 404 320 454 256 454Z")
+    mid = ("M256 440 C200 440 158 398 158 340 C158 300 182 274 194 240 C200 222 200 204 194 186 "
+           "C216 200 232 222 240 246 C236 196 240 140 268 92 C274 140 304 172 308 226 "
+           "C318 212 324 194 322 172 C344 208 354 280 354 340 C354 398 312 440 256 440Z")
+    inner = ("M256 428 C208 428 174 392 174 344 C174 310 196 290 206 262 C210 250 210 238 206 226 "
+             "C224 238 236 254 242 272 C240 232 246 190 266 150 C272 190 292 214 296 256 "
+             "C302 246 306 234 304 220 C322 250 338 300 338 344 C338 392 304 428 256 428Z")
+    tail = "M346 388 C350 452 298 494 226 486 C190 482 164 462 158 432 C180 456 214 466 246 460 C282 452 300 436 306 418Z"
+    defs = common_defs(p) + f"""
+<radialGradient id="{p}halo" cx="256" cy="310" r="240" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="{PURPLE}" stop-opacity=".5"/><stop offset=".5" stop-color="{BLUE}" stop-opacity=".16"/>
+  <stop offset="1" stop-color="{BLUE}" stop-opacity="0"/></radialGradient>
+<linearGradient id="{p}l1" x1="0" y1="38" x2="0" y2="454" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#FDA4AF"/><stop offset=".22" stop-color="{ROSE}"/>
+  <stop offset=".6" stop-color="#D0409A"/><stop offset="1" stop-color="{PURPLE}"/></linearGradient>
+<linearGradient id="{p}l2" x1="0" y1="92" x2="0" y2="440" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#E879F9"/><stop offset=".3" stop-color="{PURPLE}"/>
+  <stop offset=".7" stop-color="#6366F1"/><stop offset="1" stop-color="{BLUE}"/></linearGradient>
+<linearGradient id="{p}l3" x1="0" y1="150" x2="0" y2="428" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#93C5FD"/><stop offset=".35" stop-color="{BLUE}"/>
+  <stop offset=".75" stop-color="#38BDF8"/><stop offset="1" stop-color="{CYAN}"/></linearGradient>
+<radialGradient id="{p}core" cx="256" cy="350" r="104" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#FFFFFF"/><stop offset=".5" stop-color="#CFFAFE" stop-opacity=".95"/>
+  <stop offset=".8" stop-color="#67E8F9" stop-opacity=".6"/><stop offset="1" stop-color="{CYAN}" stop-opacity="0"/></radialGradient>
+<linearGradient id="{p}tail" x1="340" y1="410" x2="160" y2="440" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="{PURPLE}"/><stop offset=".55" stop-color="#D0409A" stop-opacity=".9"/>
+  <stop offset="1" stop-color="{ROSE}" stop-opacity=".25"/></linearGradient>
+<linearGradient id="{p}curl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#FDA4AF" stop-opacity="0"/><stop offset="1" stop-color="#FDA4AF" stop-opacity=".9"/></linearGradient>
+<linearGradient id="{p}rim" x1="150" y1="60" x2="330" y2="400" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#FFE4E6" stop-opacity=".95"/><stop offset=".55" stop-color="#FECDD3" stop-opacity=".45"/>
+  <stop offset="1" stop-color="#FECDD3" stop-opacity="0"/></linearGradient>
+<clipPath id="{p}outc"><path d="{outer}"/></clipPath>
+"""
+    b = [f'<circle cx="256" cy="310" r="240" fill="url(#{p}halo)"/>']
+    # tail curling off to the lower left
+    b.append(f'<path d="{tail}" fill="{PURPLE}" opacity=".5" filter="url(#{p}b12)"/>')
+    b.append(f'<path d="{tail}" fill="url(#{p}tail)"/>')
+    # bloom, then three flames nested toward a white hot core
+    b.append(f'<path d="{outer}" fill="{PURPLE}" opacity=".75" filter="url(#{p}b24)"/>')
+    b.append(f'<path d="{outer}" fill="url(#{p}l1)"/>')
+    b.append(f'<g clip-path="url(#{p}outc)">'
+             f'<path d="{mid}" fill="{PURPLE}" opacity=".6" filter="url(#{p}b6)"/>'
+             f'<path d="{mid}" fill="url(#{p}l2)"/>'
+             f'<path d="{inner}" fill="{BLUE}" opacity=".6" filter="url(#{p}b6)"/>'
+             f'<path d="{inner}" fill="url(#{p}l3)"/>'
+             f'<ellipse cx="256" cy="350" rx="104" ry="92" fill="url(#{p}core)"/>'
+             # light climbing the middle tongue
+             f'<path d="M262 276 C254 240 256 204 266 172" stroke="#ECFEFF" stroke-width="7" stroke-linecap="round" opacity=".5" filter="url(#{p}b3)"/>'
+             f'</g>')
+    # rim light along the outer edge
+    b.append(f'<path d="{outer}" stroke="url(#{p}rim)" stroke-width="2.6" stroke-linejoin="round"/>')
+    # smoke wisps rising from the tongues
+    for d, w in (("M270 40 C262 26 280 16 272 2", 5),):
+        b.append(f'<path d="{d}" stroke="url(#{p}curl)" stroke-width="{w*2.2}" stroke-linecap="round" filter="url(#{p}b6)"/>')
+        b.append(f'<path d="{d}" stroke="url(#{p}curl)" stroke-width="{w*.5}" stroke-linecap="round"/>')
+    # embers
+    for x, y, r, c in ((212, 96, 4.4, ROSE), (322, 74, 3.4, PURPLE), (388, 132, 3, ROSE), (132, 152, 3.4, PURPLE),
+                       (404, 236, 2.6, CYAN), (110, 250, 2.6, CYAN), (238, 30, 2.4, "#E9D5FF")):
+        b.append(f'<circle cx="{x}" cy="{y}" r="{f(r*3)}" fill="{c}" opacity=".5" filter="url(#{p}b6)"/>')
+        b.append(f'<circle cx="{x}" cy="{y}" r="{f(r)}" fill="{c}"/>')
+        b.append(f'<circle cx="{x}" cy="{y}" r="{f(r*.45)}" fill="#fff" opacity=".9"/>')
+    b.append(star(96, 356, 9, "#CFFAFE", .6))
+    b.append(star(420, 384, 11, "#FCE7F3", .6))
+    # face
+    b.append(blush(p, 196, 384, 15, 8, .55))
+    b.append(blush(p, 316, 384, 15, 8, .55))
+    b.append(eye(p, 1, 220, 348, 19, 26, halo=True))
+    b.append(eye(p, 2, 292, 348, 19, 26, halo=True))
+    b.append(smile(256, 380, 9))
+    return ("Wisp", "A will o the wisp: a rose, purple, blue and cyan flame spirit with a white hot core, a curling tail and drifting embers.",
+            defs, "".join(b))
+
+
+# ── Nocti, the jellyfish ─────────────────────────────────────────────────────
+
+def nocti():
+    p = "no-"
+    L, R, TOP = 96, 416, 60
+
+    def rim_y(x):
+        u = (x - 256) / ((R - L) / 2)
+        return 230 + 30 * (1 - u * u)
+
+    n = 10
+    pts = [(L + (R - L) * i / n, rim_y(L + (R - L) * i / n)) for i in range(n + 1)]
+    scallops = ""
+    for i in range(n, 0, -1):
+        (x0, y0), (x1, y1) = pts[i], pts[i - 1]
+        scallops += f"Q{f((x0+x1)/2)} {f((y0+y1)/2+18)} {f(x1)} {f(y1)} "
+    dome = f"M{L} {f(rim_y(L))} C{L-10} 146 166 {TOP} 256 {TOP} C346 {TOP} {R+10} 146 {R} {f(rim_y(R))}"
+    bell = f"{dome} {scallops}Z"
+    hem = f"M{R} {f(rim_y(R))} {scallops}"
+
+    defs = common_defs(p) + f"""
+<radialGradient id="{p}halo" cx="256" cy="210" r="250" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="{CYAN}" stop-opacity=".45"/><stop offset=".5" stop-color="{BLUE}" stop-opacity=".16"/>
+  <stop offset="1" stop-color="{PURPLE}" stop-opacity="0"/></radialGradient>
+<radialGradient id="{p}bell" cx="236" cy="104" r="240" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#CFFAFE" stop-opacity=".9"/><stop offset=".3" stop-color="#4FD8F0" stop-opacity=".78"/>
+  <stop offset=".62" stop-color="{BLUE}" stop-opacity=".72"/><stop offset="1" stop-color="{PURPLE}" stop-opacity=".9"/></radialGradient>
+<radialGradient id="{p}sub" cx="256" cy="262" r="160" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#ECFEFF" stop-opacity=".6"/><stop offset="1" stop-color="{CYAN}" stop-opacity="0"/></radialGradient>
+<linearGradient id="{p}tent" x1="0" y1="236" x2="0" y2="462" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#A5F3FC" stop-opacity=".95"/><stop offset=".45" stop-color="{PURPLE}" stop-opacity=".7"/>
+  <stop offset="1" stop-color="{ROSE}" stop-opacity="0"/></linearGradient>
+<linearGradient id="{p}arm" x1="0" y1="250" x2="0" y2="458" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#FB7185"/><stop offset=".5" stop-color="#C850C8" stop-opacity=".85"/>
+  <stop offset="1" stop-color="{PURPLE}" stop-opacity="0"/></linearGradient>
+<linearGradient id="{p}phi" x1="0" y1="206" x2="0" y2="818" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#FFD5DC"/></linearGradient>
+<clipPath id="{p}bellc"><path d="{bell}"/></clipPath>
+""" + blur(f"{p}phib", 40)
+    b = [f'<circle cx="256" cy="210" r="250" fill="url(#{p}halo)"/>']
+
+    # tentacles from each scallop point, longest in the middle
+    for i, (x, y) in enumerate(pts):
+        if i in (0, n):
+            continue
+        length = 126 + 70 * math.sin(math.pi * i / n) + 18 * math.sin(i * 2.3)
+        amp, ph = 9 + 3 * math.cos(i), i * .9
+        line = [(x + (x - 256) * .16 * t + amp * t ** .5 * math.sin(ph + t * 5.2), y + 4 + length * t)
+                for t in (s / 14 for s in range(15))]
+        b.append(f'<path d="{smooth(line)}" stroke="url(#{p}tent)" stroke-width="{3.4 if i % 2 else 2.4}" stroke-linecap="round"/>')
+
+    # oral arms: four frilled ribbons
+    def ribbon(x0, sway, length, ph):
+        left, right = [], []
+        steps = 44
+        for k in range(steps + 1):
+            t = k / steps
+            y = 248 + length * t
+            mid_x = x0 + sway * math.sin(ph + t * 3.2) + (x0 - 256) * .55 * t
+            w = (13 - 10.5 * t) * (1 + .26 * math.sin(t * 20 + ph))
+            left.append((mid_x - w, y))
+            right.append((mid_x + w, y))
+        return smooth(left + right[::-1], closed=True), smooth([((a[0] + c[0]) / 2, a[1]) for a, c in zip(left, right)])
+    for x0, sway, length, ph in ((214, 10, 160, 4.1), (298, 10, 168, 5.4), (234, 13, 196, 0.3), (280, 13, 204, 2.2)):
+        d, spine = ribbon(x0, sway, length, ph)
+        b.append(f'<path d="{d}" fill="url(#{p}arm)" opacity=".8"/>')
+        b.append(f'<path d="{spine}" stroke="#FFE4E6" stroke-width="1.6" stroke-linecap="round" opacity=".35"/>')
+
+    # bell
+    b.append(f'<path d="{bell}" fill="{CYAN}" opacity=".55" filter="url(#{p}b24)"/>')
+    b.append(f'<path d="{bell}" fill="url(#{p}bell)"/>')
+    b.append(f'<g clip-path="url(#{p}bellc)">')
+    # depth: the far wall of the bell, darker toward the rim, and the glow under it
+    b.append(f'<path d="{bell}" stroke="#312E81" stroke-width="44" opacity=".34" filter="url(#{p}b12)"/>')
+    b.append(f'<ellipse cx="256" cy="268" rx="160" ry="62" fill="url(#{p}sub)"/>')
+    # radial canals, fanning from the crown down to the rim
+    for k in (-5, -4, -3, 3, 4, 5):
+        x_end = 256 + k * 29
+        b.append(f'<path d="M{f(256+k*9)} 136 Q{f(256+k*24)} 170 {f(x_end)} {f(rim_y(x_end)+10)}" stroke="#ECFEFF" stroke-width="1.6" stroke-linecap="round" opacity=".2"/>')
+    # the Phosphor mark on the crown, where a moon jelly carries its four rings
+    phi = 'translate(256 110) scale(.15) translate(-512 -512)'
+    arcs = "".join(f'<path d="{d}"/>' for d in PHI_ARCS + [PHI_SPINDLE])
+    b.append(f'<g transform="{phi}" fill="{ROSE}" filter="url(#{p}phib)">{arcs}</g>')
+    b.append(f'<g transform="{phi}" fill="url(#{p}phi)">{arcs}</g>')
+    # specular sheen
+    b.append(f'<path d="M132 190 C140 132 184 92 236 80" stroke="#fff" stroke-width="12" stroke-linecap="round" opacity=".3" filter="url(#{p}b6)"/>')
+    b.append(f'<path d="M140 176 C150 134 184 104 222 94" stroke="#fff" stroke-width="3.4" stroke-linecap="round" opacity=".7"/>')
+    b.append(f'<ellipse cx="368" cy="130" rx="6" ry="13" fill="#fff" opacity=".5" transform="rotate(-40 368 130)"/>')
+    b.append('</g>')
+    b.append(f'<path d="{dome}" stroke="#CFFAFE" stroke-width="2.4" opacity=".6"/>')
+    b.append(f'<path d="{hem}" stroke="#A5F3FC" stroke-width="2.6" opacity=".8"/>')
+    # rim lights
+    for x, y in pts:
+        b.append(f'<circle cx="{f(x)}" cy="{f(y)}" r="11" fill="{CYAN}" opacity=".65" filter="url(#{p}b6)"/>')
+        b.append(f'<circle cx="{f(x)}" cy="{f(y)}" r="3.8" fill="#ECFEFF"/>')
+    # face
+    b.append(blush(p, 200, 224, 14, 7, .6))
+    b.append(blush(p, 312, 224, 14, 7, .6))
+    b.append(eye(p, 1, 222, 195, 18, 24))
+    b.append(eye(p, 2, 290, 195, 18, 24))
+    b.append(smile(256, 223, 9))
+    # drifting motes
+    for x, y, r in ((70, 300, 4.4), (442, 306, 3.4), (58, 150, 3), (456, 176, 3.8), (108, 420, 3), (412, 428, 3.4)):
+        b.append(f'<circle cx="{x}" cy="{y}" r="{r}" stroke="#A5F3FC" stroke-width="1.4" opacity=".55"/>')
+        b.append(f'<circle cx="{f(x-r*.3)}" cy="{f(y-r*.3)}" r="{f(r*.3)}" fill="#fff" opacity=".7"/>')
+    b.append(star(100, 100, 9, "#CFFAFE", .6))
+    b.append(star(424, 92, 6, "#E9D5FF", .5))
+    return ("Nocti", "A bioluminescent jellyfish with the Phosphor mark glowing on the crown of its bell, trailing frilled rose arms and fine tentacles.",
+            defs, "".join(b))
+
+
+# ── Output ───────────────────────────────────────────────────────────────────
+
+def mark(title, desc, defs, body):
+    """The mascot alone on a transparent 512 canvas."""
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        f'<!-- {title}: a Phosphor mascot. -->\n'
+        f'<!-- {title}: a Phosphor mascot. Generated by scripts/mascots.py. -->\n'
         '<svg width="512" height="512" viewBox="0 0 512 512" fill="none" '
         'xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">\n'
         f'  <title id="title">{title}</title>\n'
@@ -88,352 +456,48 @@ def svg(title, desc, body, defs):
     )
 
 
-# ── Glim, the firefly ────────────────────────────────────────────────────────
-
-def glim():
-    p = "gl-"
-    # Body: head, thorax and abdomen share one gradient and one clip, so they
-    # read as a single lit form rather than stacked parts.
-    head = '<ellipse cx="184" cy="210" rx="82" ry="76"/>'
-    thorax = '<ellipse cx="252" cy="268" rx="56" ry="48" transform="rotate(38 252 268)"/>'
-    abdomen = '<ellipse cx="320" cy="338" rx="104" ry="74" transform="rotate(38 320 338)"/>'
-    parts = head + thorax + abdomen
-    far_wing = ("M262 230 C262 160 300 92 352 70 C392 54 412 84 396 124 "
-                "C378 170 320 212 274 238Z")
-    near_wing = ("M276 246 C312 176 380 128 438 124 C478 122 488 156 462 188 "
-                 "C428 228 352 254 290 260Z")
-    far_ely = ("M246 238 C262 176 310 140 356 136 C386 134 396 156 380 178 "
-               "C350 214 300 236 256 250Z")
-    near_ely = ("M250 256 C298 208 366 192 416 208 C450 220 452 262 418 278 "
-                "C366 300 300 296 258 278Z")
-    defs = eye_defs(p) + blur(f"{p}b6", 6) + blur(f"{p}b12", 12) + blur(f"{p}b24", 24) + f"""
-<radialGradient id="{p}halo" cx="396" cy="404" r="240" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="{CYAN}" stop-opacity=".6"/><stop offset=".35" stop-color="{CYAN}" stop-opacity=".2"/>
-  <stop offset=".7" stop-color="{BLUE}" stop-opacity=".07"/><stop offset="1" stop-color="{PURPLE}" stop-opacity="0"/></radialGradient>
-<linearGradient id="{p}body" x1="120" y1="150" x2="420" y2="430" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="#7AA7FA"/><stop offset=".22" stop-color="#4F63E6"/><stop offset=".36" stop-color="#4338CA"/>
-  <stop offset=".5" stop-color="#5B21B6"/><stop offset=".7" stop-color="#7E22CE"/>
-  <stop offset=".82" stop-color="#5EC7F2"/><stop offset="1" stop-color="#ECFEFF"/></linearGradient>
-<radialGradient id="{p}lamp" cx="398" cy="404" r="96" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="#FFFFFF"/><stop offset=".3" stop-color="#CFFAFE"/>
-  <stop offset=".62" stop-color="{CYAN}" stop-opacity=".9"/><stop offset="1" stop-color="{CYAN}" stop-opacity="0"/></radialGradient>
-<linearGradient id="{p}ely" x1="340" y1="200" x2="350" y2="296" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="#8B5CF6"/><stop offset=".4" stop-color="#5B21B6"/><stop offset="1" stop-color="#2E1065"/></linearGradient>
-<linearGradient id="{p}elyF" x1="250" y1="140" x2="390" y2="250" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="#4C1D95"/><stop offset="1" stop-color="#1E1B4B"/></linearGradient>
-<linearGradient id="{p}wing" x1="290" y1="260" x2="460" y2="120" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="#A5F3FC" stop-opacity=".6"/><stop offset=".5" stop-color="#93C5FD" stop-opacity=".26"/>
-  <stop offset="1" stop-color="#C4B5FD" stop-opacity=".14"/></linearGradient>
-<linearGradient id="{p}wingF" x1="270" y1="236" x2="380" y2="60" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="#67E8F9" stop-opacity=".34"/><stop offset="1" stop-color="#A78BFA" stop-opacity=".1"/></linearGradient>
-<linearGradient id="{p}ant" x1="0" y1="1" x2="1" y2="0">
-  <stop offset="0" stop-color="#312E81"/><stop offset="1" stop-color="{PURPLE}"/></linearGradient>
-<radialGradient id="{p}rim" cx="398" cy="404" r="130" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="#ECFEFF" stop-opacity=".9"/><stop offset=".6" stop-color="#A5F3FC" stop-opacity=".6"/>
-  <stop offset="1" stop-color="#A5F3FC" stop-opacity="0"/></radialGradient>
-<clipPath id="{p}bodyc">{parts}</clipPath>
-<clipPath id="{p}nec"><path d="{near_ely}"/></clipPath>
-"""
-    b = []
-    b.append(f'<circle cx="396" cy="404" r="240" fill="url(#{p}halo)"/>')
-
-    # light trail
-    for x, y, r, o in ((452, 460, 6, .8), (478, 482, 4.4, .6), (500, 500, 3.2, .4), (424, 482, 3, .5), (456, 504, 2.2, .3)):
-        b.append(f'<circle cx="{x}" cy="{y}" r="{f(r*2.6)}" fill="{CYAN}" opacity="{f(o*.4)}" filter="url(#{p}b6)"/>')
-        b.append(f'<circle cx="{x}" cy="{y}" r="{f(r)}" fill="#ECFEFF" opacity="{f(o)}"/>')
-
-    # far membrane wing and far wing cover, behind the body
-    b.append(f'<path d="{far_wing}" fill="url(#{p}wingF)" stroke="#C7D2FE" stroke-width="1.4" stroke-opacity=".3"/>')
-    for d in ("M268 226 C290 170 318 118 360 84", "M272 232 C306 196 340 162 384 120"):
-        b.append(f'<path d="{d}" stroke="#E0E7FF" stroke-width="1.1" stroke-opacity=".2" stroke-linecap="round"/>')
-    b.append(f'<path d="{far_ely}" fill="url(#{p}elyF)"/>')
-    b.append(f'<path d="M280 192 C304 162 334 142 362 140" stroke="{ROSE}" stroke-width="1.6" opacity=".45" stroke-linecap="round"/>')
-
-    # legs, tucked under the thorax
-    for d in ("M226 300 C214 320 206 330 194 334", "M256 320 C252 342 246 354 234 362", "M290 344 C292 366 288 378 278 388"):
-        b.append(f'<path d="{d}" stroke="#1E1B4B" stroke-width="6" stroke-linecap="round"/>')
-        b.append(f'<path d="{d}" stroke="#818CF8" stroke-width="1.4" stroke-linecap="round" opacity=".45"/>')
-
-    # antennae
-    for shape, tip, col in (("M156 146 C136 106 120 80 88 66 C128 78 150 102 170 140Z", (88, 66), CYAN),
-                            ("M196 136 C196 96 206 66 232 42 C212 66 208 96 212 136Z", (232, 42), ROSE)):
-        b.append(f'<path d="{shape}" fill="url(#{p}ant)"/>')
-        x, y = tip
-        b.append(f'<circle cx="{x}" cy="{y}" r="16" fill="{col}" opacity=".55" filter="url(#{p}b6)"/>')
-        b.append(f'<circle cx="{x}" cy="{y}" r="5.5" fill="{col}"/>')
-        b.append(f'<circle cx="{x-1.5}" cy="{y-1.5}" r="2.2" fill="#fff"/>')
-
-    # body
-    b.append(f'<ellipse cx="392" cy="400" rx="70" ry="58" fill="{CYAN}" opacity=".85" filter="url(#{p}b24)"/>')
-    b.append(f'<g fill="url(#{p}body)">{parts}</g>')
-    b.append(f'<g clip-path="url(#{p}bodyc)">')
-    b.append(f'<ellipse cx="238" cy="262" rx="58" ry="46" fill="#1E1B4B" opacity=".5" filter="url(#{p}b24)"/>')
-    b.append(f'<path d="M112 230 C122 262 148 282 180 286" stroke="{CYAN}" stroke-width="8" stroke-linecap="round" opacity=".28" filter="url(#{p}b6)"/>')
-    # key light top left, shade along the underside
-    b.append(f'<ellipse cx="158" cy="168" rx="52" ry="36" fill="#fff" opacity=".24" filter="url(#{p}b24)"/>')
-    b.append(f'<path d="M112 240 C150 300 214 300 262 330 C300 356 330 392 366 420" stroke="{VOID}" stroke-width="40" stroke-linecap="round" opacity=".34" filter="url(#{p}b24)"/>')
-    # abdominal segments under the wing covers, fading toward the lantern
-    for i, (x, y) in enumerate(((304, 334), (330, 356), (354, 378))):
-        o = .34 - i * .08
-        b.append(f'<path d="M{x-52} {y+44} Q{x-6} {y+16} {x+30} {y-40}" stroke="#1E1B4B" stroke-width="3" opacity="{f(o)}" stroke-linecap="round"/>')
-        b.append(f'<path d="M{x-46} {y+46} Q{x} {y+18} {x+36} {y-38}" stroke="{ROSE}" stroke-width="1.4" opacity="{f(o)}" stroke-linecap="round"/>')
-    b.append(f'<circle cx="398" cy="404" r="96" fill="url(#{p}lamp)"/>')
-    # where the head meets the thorax: a soft occlusion shadow, and the rose
-    # sheen of a firefly's pronotum on the thorax
-    b.append(f'<path d="M244 196 C266 230 262 270 226 290" stroke="{VOID}" stroke-width="22" stroke-linecap="round" opacity=".45" filter="url(#{p}b12)"/>')
-    b.append(f'<ellipse cx="262" cy="250" rx="34" ry="22" transform="rotate(38 262 250)" fill="{ROSE}" opacity=".45" filter="url(#{p}b12)"/>')
-    b.append('</g>')
-    # rim light from the lantern along the lower edge
-    b.append(f'<ellipse cx="320" cy="338" rx="104" ry="74" transform="rotate(38 320 338)" stroke="url(#{p}rim)" stroke-width="2.6"/>')
-    b.append(f'<path d="M110 186 C120 156 146 136 176 134" stroke="#BFDBFE" stroke-width="2.4" stroke-linecap="round" opacity=".6"/>')
-
-    # near membrane wing, lit from below by the lantern
-    b.append(f'<path d="{near_wing}" fill="url(#{p}wing)"/>')
-    for d in ("M284 252 C330 206 380 168 440 140", "M290 256 C340 236 396 208 456 170", "M380 170 C392 154 406 142 424 132"):
-        b.append(f'<path d="{d}" stroke="#ECFEFF" stroke-width="1.2" stroke-opacity=".3" stroke-linecap="round"/>')
-    b.append(f'<path d="{near_wing}" stroke="#E0F2FE" stroke-width="1.6" stroke-opacity=".5"/>')
-    b.append(f'<path d="M290 260 C352 254 428 228 462 188" stroke="#A5F3FC" stroke-width="2.4" stroke-linecap="round" opacity=".6"/>')
-
-    # near wing cover: glossy, rose edged, lifted open
-    b.append(f'<path d="{near_ely}" fill="url(#{p}ely)"/>')
-    b.append(f'<g clip-path="url(#{p}nec)">'
-             f'<path d="M276 246 C324 220 374 212 420 224" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity=".28" filter="url(#{p}b3)"/>'
-             f'<path d="M262 280 C320 300 384 294 428 270" stroke="{CYAN}" stroke-width="10" opacity=".4" filter="url(#{p}b6)"/>'
-             f'<ellipse cx="254" cy="262" rx="34" ry="30" fill="#1E1B4B" opacity=".7" filter="url(#{p}b12)"/></g>')
-    b.append(f'<path d="M262 244 C304 206 366 194 416 208 C450 220 452 262 418 278" stroke="{ROSE}" stroke-width="2.4" stroke-opacity=".75" stroke-linecap="round" stroke-linejoin="round"/>')
-    b.append(f'<path d="M290 238 C334 218 382 212 414 222" stroke="#F5D0FE" stroke-width="2" stroke-linecap="round" opacity=".55"/>')
-
-    # face
-    b.append(f'<ellipse cx="132" cy="240" rx="13" ry="7" fill="{ROSE}" opacity=".4" filter="url(#{p}b3)"/>')
-    b.append(f'<ellipse cx="216" cy="244" rx="13" ry="7" fill="{ROSE}" opacity=".4" filter="url(#{p}b3)"/>')
-    b.append(eye(p, 1, 150, 214, 22, 26))
-    b.append(eye(p, 2, 200, 216, 22, 26))
-
-    b.append(star(78, 330, 9, "#CFFAFE", .5))
-    b.append(star(470, 72, 7, "#E9D5FF", .45))
-    return svg("Glim", "A glowing firefly in flight: rose edged wing covers lifted open over translucent wings, and a bright cyan lantern at its tail.",
-               f'<g transform="translate(-4 4)">{"".join(b)}</g>', defs)
+RING = 234  # inner radius of the gradient ring, the same proportion as svg/circle
 
 
-# ── Wisp, the will-o'-the-wisp ───────────────────────────────────────────────
-
-def wisp():
-    p = "wi-"
-    flame = ("M256 424 C186 424 142 374 146 312 C150 254 188 222 196 168 C210 192 222 204 232 204 "
-             "C224 146 244 100 270 46 C282 104 318 138 314 200 C328 190 338 168 340 136 "
-             "C368 192 370 252 366 312 C362 378 322 424 256 424Z")
-    defs = eye_defs(p) + blur(f"{p}b6", 6) + blur(f"{p}b12", 12) + blur(f"{p}b30", 30) + f"""
-<radialGradient id="{p}halo" cx="256" cy="300" r="230" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="{PURPLE}" stop-opacity=".5"/><stop offset=".5" stop-color="{BLUE}" stop-opacity=".16"/>
-  <stop offset="1" stop-color="{BLUE}" stop-opacity="0"/></radialGradient>
-<linearGradient id="{p}l1" x1="0" y1="40" x2="0" y2="430" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="{ROSE}" stop-opacity=".2"/><stop offset=".35" stop-color="{ROSE}" stop-opacity=".85"/>
-  <stop offset="1" stop-color="{PURPLE}"/></linearGradient>
-<linearGradient id="{p}l2" x1="0" y1="40" x2="0" y2="430" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="{PURPLE}" stop-opacity=".3"/><stop offset=".5" stop-color="{PURPLE}"/>
-  <stop offset="1" stop-color="{BLUE}"/></linearGradient>
-<linearGradient id="{p}l3" x1="0" y1="40" x2="0" y2="430" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="{BLUE}" stop-opacity=".4"/><stop offset=".55" stop-color="{BLUE}"/>
-  <stop offset="1" stop-color="{CYAN}"/></linearGradient>
-<radialGradient id="{p}core" cx="256" cy="340" r="110" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="#F0FDFF"/><stop offset=".45" stop-color="#A5F3FC"/>
-  <stop offset="1" stop-color="{CYAN}" stop-opacity=".0"/></radialGradient>
-<linearGradient id="{p}tail" x1="300" y1="400" x2="150" y2="480" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="{PURPLE}" stop-opacity=".9"/><stop offset="1" stop-color="{ROSE}" stop-opacity="0"/></linearGradient>
-<linearGradient id="{p}curl" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0" stop-color="#FDA4AF" stop-opacity="0"/><stop offset="1" stop-color="#FDA4AF" stop-opacity=".9"/></linearGradient>
-"""
-
-    def scaled(k, cx=256, cy=330):
-        return f'transform="translate({cx} {cy}) scale({k}) translate({-cx} {-cy})"'
-
-    b = ['<g transform="translate(0 18) scale(.96) translate(10 0)">']
-    b.append(f'<circle cx="256" cy="300" r="230" fill="url(#{p}halo)"/>')
-    # trailing tail curling off to the lower left
-    b.append(f'<path d="M318 400 C306 452 250 482 200 470 C160 460 150 424 178 414 C198 408 212 424 202 438 '
-             f'C196 446 184 444 182 438 C192 452 222 452 236 436 C256 414 270 404 300 380Z" fill="url(#{p}tail)"/>')
-    # bloom
-    b.append(f'<path d="{flame}" fill="{PURPLE}" opacity=".7" filter="url(#{p}b30)"/>')
-    # layered flame
-    b.append(f'<path d="{flame}" fill="url(#{p}l1)"/>')
-    b.append(f'<path d="{flame}" fill="url(#{p}l2)" {scaled(.84)}/>')
-    b.append(f'<path d="{flame}" fill="url(#{p}l3)" {scaled(.66, 256, 350)}/>')
-    b.append(f'<ellipse cx="256" cy="340" rx="110" ry="96" fill="url(#{p}core)"/>')
-    # inner licks of light
-    b.append(f'<path d="M226 300 C214 262 226 228 246 204 C244 240 252 262 262 280" stroke="#ECFEFF" stroke-width="4" stroke-linecap="round" opacity=".45" filter="url(#{p}b3)"/>')
-    b.append(f'<path d="M300 262 C306 236 304 214 296 196" stroke="#FCE7F3" stroke-width="3" stroke-linecap="round" opacity=".45"/>')
-    # rim light along the outer edge
-    b.append(f'<path d="M146 312 C150 254 188 222 196 168" stroke="#FDA4AF" stroke-width="2.4" stroke-linecap="round" opacity=".65"/>')
-    b.append(f'<path d="M340 136 C368 192 370 252 366 312" stroke="#FDA4AF" stroke-width="2.4" stroke-linecap="round" opacity=".5"/>')
-    # wisps rising from the tongues
-    for d, w in (("M270 50 C262 26 282 14 290 -4", 5), ("M196 170 C184 146 196 128 188 104", 4), ("M340 138 C350 116 340 98 350 80", 4)):
-        b.append(f'<path d="{d}" stroke="url(#{p}curl)" stroke-width="{w*2.4}" stroke-linecap="round" filter="url(#{p}b6)"/>')
-        b.append(f'<path d="{d}" stroke="url(#{p}curl)" stroke-width="{w*.5}" stroke-linecap="round"/>')
-    # embers
-    embers = [(206, 96, 4, ROSE), (318, 78, 3.2, PURPLE), (372, 112, 2.6, ROSE), (150, 140, 3, PURPLE),
-              (296, 30, 2.4, "#FDA4AF"), (394, 200, 2.4, CYAN), (118, 230, 2.2, CYAN), (236, 40, 2, "#E9D5FF")]
-    for x, y, r, c in embers:
-        b.append(f'<circle cx="{x}" cy="{y}" r="{f(r*3)}" fill="{c}" opacity=".45" filter="url(#{p}b6)"/>')
-        b.append(f'<circle cx="{x}" cy="{y}" r="{f(r)}" fill="{c}"/>')
-        b.append(f'<circle cx="{x}" cy="{y}" r="{f(r*.45)}" fill="#fff" opacity=".9"/>')
-    b.append(star(112, 330, 8, "#CFFAFE", .5))
-    b.append(star(410, 360, 10, "#FCE7F3", .5))
-    # face
-    b.append(eye(p, 1, 224, 334, 20, 25, look=(1.5, 2.5), dark=True))
-    b.append(eye(p, 2, 290, 334, 20, 25, look=(1.5, 2.5), dark=True))
-    b.append(f'<ellipse cx="200" cy="370" rx="12" ry="6" fill="{ROSE}" opacity=".45" filter="url(#{p}b3)"/>')
-    b.append(f'<ellipse cx="314" cy="370" rx="12" ry="6" fill="{ROSE}" opacity=".45" filter="url(#{p}b3)"/>')
-    b.append('</g>')
-    return svg("Wisp", "A will o the wisp: a layered rose, purple, blue and cyan flame spirit with a curling tail and drifting embers.",
-               "".join(b), defs)
-
-
-# ── Nocti, the jellyfish ─────────────────────────────────────────────────────
-
-def nocti():
-    p = "no-"
-    L, R, TOP = 106, 406, 64
-
-    def rim_y(x):
-        u = (x - 256) / ((R - L) / 2)
-        return 226 + 30 * (1 - u * u)
-
-    n = 10
-    xs = [L + (R - L) * i / n for i in range(n + 1)]
-    pts = [(x, rim_y(x)) for x in xs]
-    scal = f"M{f(R)} {f(rim_y(R))} "
-    for i in range(n, 0, -1):
-        x0, y0 = pts[i]
-        x1, y1 = pts[i - 1]
-        scal += f"Q{f((x0+x1)/2)} {f((y0+y1)/2+18)} {f(x1)} {f(y1)} "
-    bell = (f"M{L} {f(rim_y(L))} C{L-6} 150 172 {TOP} 256 {TOP} C340 {TOP} {R+6} 150 {R} {f(rim_y(R))} "
-            + scal.replace(f"M{f(R)} {f(rim_y(R))} ", "") + "Z")
-
-    defs = eye_defs(p) + blur(f"{p}b6", 6) + blur(f"{p}b12", 12) + blur(f"{p}b30", 30) + f"""
-<radialGradient id="{p}halo" cx="256" cy="210" r="240" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="{CYAN}" stop-opacity=".45"/><stop offset=".5" stop-color="{BLUE}" stop-opacity=".16"/>
-  <stop offset="1" stop-color="{PURPLE}" stop-opacity="0"/></radialGradient>
-<radialGradient id="{p}bell" cx="256" cy="96" r="230" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="#A5F3FC" stop-opacity=".75"/><stop offset=".35" stop-color="{CYAN}" stop-opacity=".55"/>
-  <stop offset=".7" stop-color="{BLUE}" stop-opacity=".55"/><stop offset="1" stop-color="{PURPLE}" stop-opacity=".85"/></radialGradient>
-<radialGradient id="{p}sub" cx="256" cy="260" r="150" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="#ECFEFF" stop-opacity=".5"/><stop offset="1" stop-color="{CYAN}" stop-opacity="0"/></radialGradient>
-<linearGradient id="{p}tent" x1="0" y1="230" x2="0" y2="500" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="#A5F3FC" stop-opacity=".9"/><stop offset=".45" stop-color="{PURPLE}" stop-opacity=".6"/>
-  <stop offset="1" stop-color="{ROSE}" stop-opacity="0"/></linearGradient>
-<linearGradient id="{p}arm" x1="0" y1="250" x2="0" y2="480" gradientUnits="userSpaceOnUse">
-  <stop offset="0" stop-color="{ROSE}" stop-opacity=".95"/><stop offset=".6" stop-color="{PURPLE}" stop-opacity=".6"/>
-  <stop offset="1" stop-color="{PURPLE}" stop-opacity="0"/></linearGradient>
-<linearGradient id="{p}phi" x1="0" y1="0" x2="1" y2="1">
-  <stop offset="0" stop-color="#FBCFE8"/><stop offset="1" stop-color="{ROSE}"/></linearGradient>
-<clipPath id="{p}bellc"><path d="{bell}"/></clipPath>
-"""
-    b = []
-    b.append(f'<circle cx="256" cy="210" r="240" fill="url(#{p}halo)"/>')
-
-    # tentacles from each scallop point
-    tent = []
-    for i, (x, y) in enumerate(pts):
-        if i in (0, n):
-            continue
-        length = 200 + 50 * math.sin(i * 1.7)
-        amp = 10 + 4 * math.cos(i)
-        ph = i * .9
-        d = f"M{f(x)} {f(y+6)}"
-        steps = 6
-        for s in range(1, steps + 1):
-            t = s / steps
-            yy = y + 6 + length * t
-            xx = x + (x - 256) * .18 * t + amp * math.sin(ph + t * 5)
-            cx_ = x + (x - 256) * .18 * (t - .5 / steps) + amp * math.sin(ph + (t - .5 / steps) * 5) * 1.6
-            cy_ = yy - length / steps / 2
-            d += f" Q{f(cx_)} {f(cy_)} {f(xx)} {f(yy)}"
-        w = 3.2 if i % 2 else 2.2
-        tent.append(f'<path d="{d}" stroke="url(#{p}tent)" stroke-width="{w}" stroke-linecap="round"/>')
-    b.append("".join(tent))
-
-    # oral arms: four frilled ribbons
-    def ribbon(x0, sway, length, ph):
-        left, right = [], []
-        N = 40
-        for k in range(N + 1):
-            t = k / N
-            y = 250 + length * t
-            cx_ = x0 + sway * math.sin(ph + t * 3.2) + (x0 - 256) * .6 * t
-            w = (11 - 8.5 * t) * (1 + .28 * math.sin(t * 38 + ph))
-            left.append((cx_ - w, y))
-            right.append((cx_ + w, y))
-        poly = left + right[::-1]
-        return "M" + " L".join(f"{f(a)} {f(c)}" for a, c in poly) + "Z"
-    for x0, sway, length, ph in ((232, 14, 210, 0.3), (280, 14, 220, 2.2), (214, 10, 170, 4.1), (298, 10, 180, 5.4)):
-        d = ribbon(x0, sway, length, ph)
-        b.append(f'<path d="{d}" fill="url(#{p}arm)" opacity=".7"/>')
-        b.append(f'<path d="{d}" stroke="#FBCFE8" stroke-width="1" stroke-opacity=".35"/>')
-
-    # bell
-    b.append(f'<path d="{bell}" fill="{CYAN}" opacity=".55" filter="url(#{p}b30)"/>')
-    b.append(f'<path d="{bell}" fill="url(#{p}bell)"/>')
-    b.append(f'<g clip-path="url(#{p}bellc)">')
-    # subumbrella glow
-    b.append(f'<ellipse cx="256" cy="262" rx="150" ry="70" fill="url(#{p}sub)"/>')
-    # radial canals
-    for k in range(-5, 6):
-        x_end = 256 + k * 28
-        b.append(f'<path d="M256 {TOP+20} Q{f(256+k*20)} 150 {f(x_end)} {f(rim_y(x_end)+10)}" stroke="#ECFEFF" stroke-width="1.4" opacity=".22"/>')
-    # the Phosphor crescents, glowing inside the bell like a moon jelly's four rings
-    phi = f'translate(256 170) scale(.5) translate(-512 -512)'
-    arcs = "".join(f'<path d="{d}"/>' for d in PHI_ARCS)
-    b.append(f'<g transform="{phi}" fill="{ROSE}" opacity=".5" filter="url(#{p}b12)">{arcs}</g>')
-    b.append(f'<g transform="{phi}" fill="url(#{p}phi)" opacity=".38">{arcs}</g>')
-    # specular sheen
-    b.append(f'<path d="M150 178 C160 124 202 92 250 86" stroke="#fff" stroke-width="10" stroke-linecap="round" opacity=".35" filter="url(#{p}b3)"/>')
-    b.append(f'<path d="M156 170 C166 128 200 102 238 96" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".6"/>')
-    b.append(f'<ellipse cx="350" cy="120" rx="10" ry="16" fill="#fff" opacity=".25" transform="rotate(35 350 120)" filter="url(#{p}b3)"/>')
-    b.append('</g>')
-    b.append(f'<path d="M{L} {f(rim_y(L))} C{L-6} 150 172 {TOP} 256 {TOP} C340 {TOP} {R+6} 150 {R} {f(rim_y(R))}" stroke="#CFFAFE" stroke-width="2.2" opacity=".55"/>')
-    b.append(f'<path d="{scal}" stroke="#A5F3FC" stroke-width="2.4" opacity=".7"/>')
-    # rim lights
-    for x, y in pts:
-        b.append(f'<circle cx="{f(x)}" cy="{f(y)}" r="10" fill="{CYAN}" opacity=".6" filter="url(#{p}b6)"/>')
-        b.append(f'<circle cx="{f(x)}" cy="{f(y)}" r="3.4" fill="#ECFEFF"/>')
-    # face
-    b.append(eye(p, 1, 228, 186, 19, 22, look=(1.5, 2.5)))
-    b.append(eye(p, 2, 284, 186, 19, 22, look=(1.5, 2.5)))
-    b.append(f'<ellipse cx="210" cy="214" rx="10" ry="6" fill="{ROSE}" opacity=".5" filter="url(#{p}b3)"/>')
-    b.append(f'<ellipse cx="302" cy="214" rx="10" ry="6" fill="{ROSE}" opacity=".5" filter="url(#{p}b3)"/>')
-    # drifting motes
-    for x, y, r in ((80, 300, 4), (430, 300, 3), (66, 150, 2.6), (446, 190, 3.4), (120, 440, 2.6), (400, 440, 3)):
-        b.append(f'<circle cx="{x}" cy="{y}" r="{r}" stroke="#A5F3FC" stroke-width="1.2" opacity=".5"/>')
-        b.append(f'<circle cx="{x-r*.3}" cy="{y-r*.3}" r="{f(r*.3)}" fill="#fff" opacity=".6"/>')
-    b.append(star(96, 92, 8, "#CFFAFE", .5))
-    return svg("Nocti", "A bioluminescent jellyfish whose bell glows with the four crescents of the Phosphor mark, trailing frilled rose arms and fine tentacles.",
-               "".join(b), defs)
-
-
-def avatar(name, inner_svg, box=(40, 40, 432)):
-    """Discord avatar: the mascot on a navy disc with room for the round crop."""
-    import re
-    inner = re.sub(r"^.*?<svg[^>]*>", "", inner_svg, flags=re.S)
-    inner = re.sub(r"</svg>\s*$", "", inner)
-    inner = re.sub(r'<title id="title">.*?</title>|<desc id="desc">.*?</desc>', "", inner, flags=re.S)
+def avatar(title, defs, body, fit):
+    """Discord avatar: the mascot inside the suite's gradient ring, on the navy
+    panel of the framed icons. fit is (x, y, scale), placing the 512 canvas so
+    the face stays large after the round crop."""
+    x, y, k = fit
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        f'<svg width="1024" height="1024" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" '
-        f'role="img" aria-labelledby="title desc">\n  <title id="title">{name}</title>\n'
-        f'  <desc id="desc">{name}, the Phosphor mascot, on a deep navy disc.</desc>\n'
-        '  <defs><clipPath id="av-c"><circle cx="256" cy="256" r="256"/></clipPath>'
-        f'<radialGradient id="av-bg" cx=".5" cy=".42" r=".62"><stop offset="0" stop-color="#13234A"/>'
-        f'<stop offset=".6" stop-color="{NAVY}"/><stop offset="1" stop-color="{VOID}"/></radialGradient></defs>\n'
-        '  <g clip-path="url(#av-c)"><rect width="512" height="512" fill="url(#av-bg)"/>'
-        f'<svg x="{box[0]}" y="{box[1]}" width="{box[2]}" height="{box[2]}" viewBox="0 0 512 512" overflow="visible">{inner}</svg></g>\n</svg>\n'
+        f'<!-- {title}: a Phosphor mascot avatar. Generated by scripts/mascots.py. -->\n'
+        '<svg width="1024" height="1024" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" '
+        'role="img" aria-labelledby="title desc">\n'
+        f'  <title id="title">{title}</title>\n'
+        f'  <desc id="desc">{title}, the Phosphor mascot, inside a gradient ring on deep navy.</desc>\n'
+        f'  <defs>{defs}\n'
+        '<linearGradient id="av-ring" x1="60" y1="60" x2="452" y2="452" gradientUnits="userSpaceOnUse">'
+        f'<stop offset="0" stop-color="{CYAN}"/><stop offset=".45" stop-color="{BLUE}"/>'
+        f'<stop offset=".75" stop-color="{PURPLE}"/><stop offset="1" stop-color="{ROSE}"/></linearGradient>'
+        f'<radialGradient id="av-bg" cx=".42" cy=".36" r=".8"><stop offset="0" stop-color="#132450"/>'
+        f'<stop offset=".5" stop-color="{NAVY}"/><stop offset="1" stop-color="{VOID}"/></radialGradient>'
+        f'<clipPath id="av-c"><circle cx="256" cy="256" r="{RING}"/></clipPath></defs>\n'
+        '  <circle cx="256" cy="256" r="256" fill="url(#av-ring)"/>\n'
+        f'  <circle cx="256" cy="256" r="{RING}" fill="url(#av-bg)"/>\n'
+        f'  <g clip-path="url(#av-c)"><g transform="translate({x} {y}) scale({k})">{body}</g></g>\n'
+        f'  <circle cx="256" cy="256" r="{RING - 1}" stroke="{VOID}" stroke-width="2" opacity=".55"/>\n'
+        '</svg>\n'
     )
 
 
-# Per mascot framing inside the avatar disc: x, y, size.
-BOX = {"glim": (44, 46, 424), "wisp": (40, 30, 440), "nocti": (-4, 22, 520)}
+# Per mascot framing inside the ring: x, y, scale.
+FIT = {"glim": (14, 32, .93), "wisp": (2.6, -4, .99), "nocti": (-12.8, 16, 1.05)}
 
-for name, fn in (("glim", glim), ("wisp", wisp), ("nocti", nocti)):
-    s = fn()
-    (OUT / f"{name}.svg").write_text(s)
-    (OUT / "avatar" / f"{name}.svg").write_text(avatar(name.capitalize(), s, BOX[name]))
-print(f"wrote {OUT.relative_to(ROOT)}")
+
+def main():
+    (OUT / "avatar").mkdir(parents=True, exist_ok=True)
+    for name, fn in (("glim", glim), ("wisp", wisp), ("nocti", nocti)):
+        title, desc, defs, body = fn()
+        (OUT / f"{name}.svg").write_text(mark(title, desc, defs, body))
+        (OUT / "avatar" / f"{name}.svg").write_text(avatar(title, defs, body, FIT[name]))
+    print(f"wrote {OUT.relative_to(ROOT)}")
+
+
+if __name__ == "__main__":
+    main()
