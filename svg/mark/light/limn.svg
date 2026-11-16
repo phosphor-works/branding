@@ -1,0 +1,11 @@
+<!-- SPDX-FileCopyrightText: 2026 fuddlesworth -->
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
+<svg viewBox="194 194 636 636" xmlns="http://www.w3.org/2000/svg" fill="none" role="img" aria-labelledby="title">
+  <title id="title">Limn</title>
+  <!-- Limn mark: deep gradient for light backgrounds. -->
+  <defs><linearGradient id="m" x1="330" y1="250" x2="694" y2="780" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#075985"/><stop offset="0.55" stop-color="#4C1D95"/><stop offset="1" stop-color="#881337"/></linearGradient></defs>
+  <g fill="url(#m)">
+    <path d="M278 706 C360.6 661.9 482.7 648.7 558 571.7 C610.4 517.6 662.1 422.2 687.8 347.2 Q582.7 316 527 221.6 C460.4 264.6 380.3 337.9 340.5 401.8 C284.1 493.5 300.8 615.2 278 706 Z M278 706 L421.5 507.7 A40 40 0 1 1 435.7 518.8 Z"/>
+    <path d="M278 706 C388 796 578 802 746 672 C598 734 418 736 278 706 Z"/>
+  </g>
+</svg>

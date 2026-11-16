@@ -17,6 +17,7 @@ svg/                                brand icons, by shape then theme
 │   │   ├── lambent.svg             Lambent shell
 │   │   ├── afterglow.svg           Afterglow terminal
 │   │   ├── facet.svg               Facet settings manager
+│   │   ├── limn.svg                Limn text editor
 │   │   ├── phosphor-shell.svg      PhosphorShell library mark
 │   │   ├── phosphor-shader.svg     PhosphorShader app icon
 │   │   ├── plasmazones.svg         PlasmaZones app icon
@@ -31,7 +32,8 @@ svg/                                brand icons, by shape then theme
     │   ├── phosphor.svg
     │   ├── lambent.svg
     │   ├── afterglow.svg
-    │   └── facet.svg
+    │   ├── facet.svg
+    │   └── limn.svg
     ├── light/                      deep gradient, for light backgrounds
     └── mono/                       single colour via currentColor
 └── mascot/                         mascot candidates, generated (see below)
@@ -83,6 +85,7 @@ distinguishes them:
 | `lambent`              | A curved L cradling a small flame.                           |
 | `afterglow`            | Tapered A with a split elliptical crossbar, echoing the Phosphor mark. |
 | `facet`                | A brilliant-cut gem seen from above: octagonal table, eight star facets. |
+| `limn`                 | A slanted pen nib, split by its slit and vent, drawing a tapered stroke. |
 
 ## Mascots
 
