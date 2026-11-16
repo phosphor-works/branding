@@ -1,0 +1,12 @@
+<!-- SPDX-FileCopyrightText: 2026 fuddlesworth -->
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
+<svg viewBox="197 197 630 630" xmlns="http://www.w3.org/2000/svg" fill="none" role="img" aria-labelledby="title">
+  <title id="title">Glisten</title>
+  <!-- Glisten mark: flat gradient, badge-free. Pair with a dark or transparent background. -->
+  <defs><linearGradient id="m" x1="330" y1="250" x2="694" y2="780" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#22D3EE"/><stop offset="0.55" stop-color="#A855F7"/><stop offset="1" stop-color="#F43F5E"/></linearGradient></defs>
+  <g fill="url(#m)">
+    <path d="M240 593 A206 206 0 1 1 652 593 A206 206 0 1 1 240 593 Z M318 581 A140 140 0 1 0 598 581 A140 140 0 1 0 318 581 Z"/>
+    <path d="M402 581 A56 56 0 1 1 514 581 A56 56 0 1 1 402 581 Z"/>
+    <path d="M686 225 Q696.8 342.5 784 357 Q696.8 371.5 686 489 Q675.2 371.5 588 357 Q675.2 342.5 686 225 Z"/>
+  </g>
+</svg>
