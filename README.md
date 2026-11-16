@@ -18,6 +18,7 @@ svg/                                brand icons, by shape then theme
 │   │   ├── afterglow.svg           Afterglow terminal
 │   │   ├── facet.svg               Facet settings manager
 │   │   ├── limn.svg                Limn text editor
+│   │   ├── glisten.svg             Glisten screen capture and recorder
 │   │   ├── phosphor-shell.svg      PhosphorShell library mark
 │   │   ├── phosphor-shader.svg     PhosphorShader app icon
 │   │   ├── plasmazones.svg         PlasmaZones app icon
@@ -33,7 +34,8 @@ svg/                                brand icons, by shape then theme
     │   ├── lambent.svg
     │   ├── afterglow.svg
     │   ├── facet.svg
-    │   └── limn.svg
+    │   ├── limn.svg
+    │   └── glisten.svg
     ├── light/                      deep gradient, for light backgrounds
     └── mono/                       single colour via currentColor
 
@@ -80,6 +82,7 @@ distinguishes them:
 | `afterglow`            | Tapered A with a split elliptical crossbar, echoing the Phosphor mark. |
 | `facet`                | A brilliant-cut gem seen from above: octagonal table, eight star facets. |
 | `limn`                 | A slanted pen nib, split by its slit and vent, drawing a tapered stroke. |
+| `glisten`              | A lens ring around a record dot, with a four-pointed glint of light off its rim. |
 
 ## Releases and installing icons
 
