@@ -19,6 +19,7 @@ svg/                                brand icons, by shape then theme
 │   │   ├── facet.svg               Facet settings manager
 │   │   ├── limn.svg                Limn text editor
 │   │   ├── glisten.svg             Glisten screen capture and recorder
+│   │   ├── cresset.svg             Cresset file explorer
 │   │   ├── phosphor-shell.svg      PhosphorShell library mark
 │   │   ├── phosphor-shader.svg     PhosphorShader app icon
 │   │   ├── plasmazones.svg         PlasmaZones app icon
@@ -35,7 +36,8 @@ svg/                                brand icons, by shape then theme
     │   ├── afterglow.svg
     │   ├── facet.svg
     │   ├── limn.svg
-    │   └── glisten.svg
+    │   ├── glisten.svg
+    │   └── cresset.svg
     ├── light/                      deep gradient, for light backgrounds
     └── mono/                       single colour via currentColor
 └── mascot/                         mascot candidates, generated (see below)
@@ -89,6 +91,7 @@ distinguishes them:
 | `facet`                | A brilliant-cut gem seen from above: octagonal table, eight star facets. |
 | `limn`                 | A slanted pen nib, split by its slit and vent, drawing a tapered stroke. |
 | `glisten`              | A lens ring around a record dot, with a four-pointed glint of light off its rim. |
+| `cresset`              | A beacon fire: a three-tongued flame in a crescent bowl on a tapered pole. |
 
 ## Mascots
 
