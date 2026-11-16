@@ -20,6 +20,7 @@ svg/                                brand icons, by shape then theme
 │   │   ├── limn.svg                Limn text editor
 │   │   ├── glisten.svg             Glisten screen capture and recorder
 │   │   ├── cresset.svg             Cresset file explorer
+│   │   ├── illume.svg              Illume image viewer
 │   │   ├── phosphor-shell.svg      PhosphorShell library mark
 │   │   ├── phosphor-shader.svg     PhosphorShader app icon
 │   │   ├── plasmazones.svg         PlasmaZones app icon
@@ -37,7 +38,8 @@ svg/                                brand icons, by shape then theme
     │   ├── facet.svg
     │   ├── limn.svg
     │   ├── glisten.svg
-    │   └── cresset.svg
+    │   ├── cresset.svg
+    │   └── illume.svg
     ├── light/                      deep gradient, for light backgrounds
     └── mono/                       single colour via currentColor
 └── mascot/                         mascot candidates, generated (see below)
@@ -92,6 +94,7 @@ distinguishes them:
 | `limn`                 | A slanted pen nib, split by its slit and vent, drawing a tapered stroke. |
 | `glisten`              | A lens ring around a record dot, with a four-pointed glint of light off its rim. |
 | `cresset`              | A beacon fire: a three-tongued flame in a crescent bowl on a tapered pole. |
+| `illume`               | An almond eye of two crescent lids, with a small eight-rayed sun for its iris. |
 
 ## Mascots
 
