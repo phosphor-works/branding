@@ -1,0 +1,12 @@
+<!-- SPDX-FileCopyrightText: 2026 fuddlesworth -->
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
+<svg viewBox="184 184 656 656" xmlns="http://www.w3.org/2000/svg" fill="none" role="img" aria-labelledby="title">
+  <title id="title">Cresset</title>
+  <!-- Cresset mark: deep gradient for light backgrounds. -->
+  <defs><linearGradient id="m" x1="330" y1="250" x2="694" y2="780" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#075985"/><stop offset="0.55" stop-color="#4C1D95"/><stop offset="1" stop-color="#881337"/></linearGradient></defs>
+  <g fill="url(#m)">
+    <path d="M512 212 C536 292 572 342 580 404 C596 380 612 344 618 300 C664 372 672 470 622 548 C560 572 464 572 402 548 C352 470 360 372 406 300 C412 344 428 380 444 404 C452 342 488 292 512 212 Z"/>
+    <path d="M318 548 C356 704 668 704 706 548 C640 624 384 624 318 548 Z"/>
+    <path d="M482 668 C494 726 504 772 512 812 C520 772 530 726 542 668 Z"/>
+  </g>
+</svg>
