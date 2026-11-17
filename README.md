@@ -117,8 +117,10 @@ upload with
 
 ## Releases and installing icons
 
-Apps don't copy icons. Each pins a branding release by version, URL and
-SHA-256 and installs its icons from the archive. A tag `vX.Y.Z` publishes
+Nothing copies icons or adds this repo as a submodule. Apps and the website
+pin a branding release by version, URL and SHA-256: apps install their icons
+from the archive, and the website serves its `svg/` tree and reads its
+palette. A tag `vX.Y.Z` publishes
 `phosphor-branding-X.Y.Z.tar.gz`:
 
 ```
@@ -126,6 +128,7 @@ phosphor-branding-X.Y.Z/
 ├── hicolor/scalable/apps/<name>.svg       square/dark, for dark themes
 ├── hicolor/<N>x<N>/apps/<name>.png        16, 22, 24, 32, 48, 64, 128, 256, 512
 ├── hicolor-light/...                      the same from square/light
+├── svg/{square,circle,mark,mascot}/...    the source SVGs, as in this repo
 ├── palette/  matugen/templates/
 ├── cmake/PhosphorBranding.cmake
 ├── LICENSE  VERSION
@@ -229,12 +232,8 @@ matugen image /path/to/wallpaper.png
 
 ## Usage
 
-**Consuming from another repo:** add this repo as a git submodule.
-
-```sh
-git submodule add https://github.com/phosphor-works/branding.git submodules/branding
-git submodule update --init --recursive
-```
+**Consuming from another repo:** pin a release archive, as described in
+[Releases and installing icons](#releases-and-installing-icons).
 
 **One-off download:** `curl` the raw SVG:
 
