@@ -3,7 +3,8 @@
 #
 # A tag vX.Y.Z publishes phosphor-branding-X.Y.Z.tar.gz and its .sha256 as a
 # GitHub release. Apps pin that archive by version, URL and SHA-256 and
-# install their icons with its cmake/PhosphorBranding.cmake.
+# install their icons with its cmake/PhosphorBranding.cmake; the website pins
+# it too, for the svg/ tree and the palette.
 name: Release
 
 on:
@@ -31,4 +32,4 @@ jobs:
             "dist/phosphor-branding-${version}.tar.gz" \
             "dist/phosphor-branding-${version}.tar.gz.sha256" \
             --title "Branding ${version}" \
-            --notes "Icons, palette and matugen template for the Phosphor suite. Pin \`phosphor-branding-${version}.tar.gz\` by its SHA-256 and install icons with \`cmake/PhosphorBranding.cmake\`."
+            --notes "Icons, source SVGs, palette and matugen template for the Phosphor suite. Pin \`phosphor-branding-${version}.tar.gz\` by its SHA-256 and install icons with \`cmake/PhosphorBranding.cmake\`."

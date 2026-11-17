@@ -8,8 +8,9 @@
 #
 # writes <out dir>/phosphor-branding-<version>.tar.gz and its .sha256. The
 # archive holds the framed icons as hicolor (dark themes) and hicolor-light
-# trees, scalable and rendered to PNG, the palette, the matugen template,
-# cmake/PhosphorBranding.cmake and the licence. The tarball is reproducible:
+# trees, scalable and rendered to PNG, the source svg/ tree (square, circle,
+# mark and mascot artwork, for sites and documents), the palette, the matugen
+# template, cmake/PhosphorBranding.cmake and the licence. The tarball is reproducible:
 # sorted entries, fixed times and owners, so the same tree gives the same
 # SHA-256. Needs rsvg-convert (librsvg).
 set -euo pipefail
@@ -42,6 +43,7 @@ for pair in dark:hicolor light:hicolor-light; do
     done
 done
 
+cp -r "$root/svg" "$dest/svg"
 cp -r "$root/palette" "$dest/palette"
 mkdir -p "$dest/matugen"
 cp -r "$root/matugen/templates" "$dest/matugen/templates"
