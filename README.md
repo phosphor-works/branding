@@ -5,7 +5,7 @@
 
 Canonical brand assets for the Phosphor library suite — the cyan /
 blue / purple / rose gradient logos you see on
-[phosphor-works.github.io](https://phosphor-works.github.io).
+[phosphor-works.org](https://phosphor-works.org).
 
 ## Layout
 
@@ -180,7 +180,7 @@ them.
 | Surface   | `#0B1730`| `#E8EEFF` | inner-square fill on the topbar logo |
 
 Full palette + Material You role map lives at
-[phosphor-works.github.io/palette/](https://phosphor-works.github.io/palette/),
+[phosphor-works.org/palette/](https://phosphor-works.org/palette/),
 rendered from the canonical [`palette/phosphor.toml`](palette/phosphor.toml)
 in this repo.
 
@@ -205,7 +205,7 @@ curl -L \
 `palette/preview.html` is a self-contained swatch + role-grid preview
 that opens directly in a browser; the three preview CSS files
 (`preview.css`, `preview.dark.css`, `preview.light.css`) are the same
-ones [phosphor-works.github.io/palette/](https://phosphor-works.github.io/palette/)
+ones [phosphor-works.org/palette/](https://phosphor-works.org/palette/)
 loads at runtime.
 
 ## Matugen template
