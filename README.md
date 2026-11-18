@@ -21,8 +21,6 @@ svg/                                brand icons, by shape then theme
 │   │   ├── glisten.svg             Glisten screen capture and recorder
 │   │   ├── cresset.svg             Cresset file explorer
 │   │   ├── illume.svg              Illume image viewer
-│   │   ├── phosphor-shell.svg      PhosphorShell library mark
-│   │   ├── phosphor-shader.svg     PhosphorShader app icon
 │   │   ├── plasmazones.svg         PlasmaZones app icon
 │   │   ├── plasmazones-editor.svg  PlasmaZones layout editor
 │   │   └── plasmazones-settings.svg PlasmaZones settings
@@ -42,7 +40,7 @@ svg/                                brand icons, by shape then theme
     │   └── illume.svg
     ├── light/                      deep gradient, for light backgrounds
     └── mono/                       single colour via currentColor
-└── mascot/                         mascot candidates, generated (see below)
+└── mascot/                         the mascots, generated (see below)
     ├── glim.svg                    standalone, transparent background
     ├── wisp.svg
     ├── nocti.svg
@@ -83,11 +81,9 @@ distinguishes them:
 | Mark                   | Inner                                                        |
 |------------------------|--------------------------------------------------------------|
 | `phosphor`             | Φ — stylized flux symbol, umbrella brand.                    |
-| `phosphor-shell`       | Three nested rounded rectangles — containment framework wrapping inner surfaces. |
 | `plasmazones`          | Five stroked zones, the core tiling motif.                   |
 | `plasmazones-editor`   | Zone motif wrapped in a canvas mark.                         |
 | `plasmazones-settings` | Zone motif wrapped in a cog outline.                         |
-| `phosphor-shader`      | Two input nodes wired into an output node.                   |
 | `lambent`              | A curved L cradling a small flame.                           |
 | `afterglow`            | Tapered A with a split elliptical crossbar, echoing the Phosphor mark. |
 | `facet`                | A brilliant-cut gem seen from above: octagonal table, eight star facets. |
@@ -98,8 +94,9 @@ distinguishes them:
 
 ## Mascots
 
-Three candidates for the Phosphor mascot and Discord bot, all drawn in
-the brand palette on 512 × 512 canvases:
+The three Phosphor mascots. Each one is used across the project, the
+Discord bot included, and all three are drawn in the brand palette on
+512 × 512 canvases:
 
 | Mascot  | Character                                                                 |
 |---------|---------------------------------------------------------------------------|
