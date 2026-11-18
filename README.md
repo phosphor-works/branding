@@ -108,7 +108,8 @@ The bodies, tentacles, ribbons and rim lights are computed, so edit
 `scripts/mascots.py` rather than the SVGs and rerun it. The avatar
 variants sit inside the same gradient ring as `svg/circle`, framed so
 the face stays readable at Discord's smallest sizes after the round
-crop (`FIT` in the script sets each one's framing). Render one for
+crop (`FIT` in the script sets each one's framing). `MARK_SCALE` shrinks a
+standalone drawing whose glow would otherwise run off the canvas edge. Render one for
 upload with
 `rsvg-convert -w 1024 svg/mascot/avatar/glim.svg -o glim.png`.
 
