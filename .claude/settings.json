@@ -1,0 +1,13 @@
+{
+  "enabledPlugins": {
+    "phosphor-works@phosphor-works": true
+  },
+  "extraKnownMarketplaces": {
+    "phosphor-works": {
+      "source": {
+        "source": "github",
+        "repo": "phosphor-works/workspace"
+      }
+    }
+  }
+}
