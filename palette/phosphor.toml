@@ -20,7 +20,7 @@
 [meta]
 name        = "Phosphor"
 description = "PlasmaZones signature palette — cyan → blue → purple → rose on deep navy."
-author      = "fuddlesworth"
+author      = "Phosphor Works Team"
 version     = "1.0"
 # Primary accent is blue; the logo gradient sweeps from cyan through
 # blue and purple to rose, with blue sitting at the visual centre.
