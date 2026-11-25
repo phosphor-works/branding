@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2026 fuddlesworth
+# SPDX-FileCopyrightText: 2026 Phosphor Works Team
 # SPDX-License-Identifier: CC-BY-SA-4.0
 #
 # Every push and PR: the icons are accessible and their circle variants are
@@ -17,7 +17,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install librsvg
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends librsvg2-bin
       - name: Check icons
