@@ -1,13 +1,13 @@
-# Phosphor Branding
-
 <!-- SPDX-FileCopyrightText: 2026 Phosphor Works Team -->
 <!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
 
-Canonical brand assets for the Phosphor library suite — the cyan /
-blue / purple / rose gradient logos you see on
-[phosphor-works.org](https://phosphor-works.org).
+# Phosphor Branding
 
-## Layout
+This repository holds the canonical brand assets of the Phosphor library suite. These are the cyan, blue, purple and
+rose gradient logos of [phosphor-works.org](https://phosphor-works.org), the mascots, the brand palette and the
+matugen template.
+
+## Contents
 
 ```
 svg/                                brand icons, by shape then theme
@@ -72,54 +72,67 @@ matugen/                            wallpaper-reactive palette template
                                     from any wallpaper via Material You
 ```
 
-All framed icons share the same outer frame: a 1024 × 1024 SVG with
-`viewBox="96 96 832 832"`, a 4-stop cyan → blue → purple → rose
-gradient border, a radial navy (dark) or brand-tinted pastel (light)
-inner panel, and three soft accent glows.  The inner content
-distinguishes them:
+All framed icons have the same outer frame:
 
-| Mark                   | Inner                                                        |
-|------------------------|--------------------------------------------------------------|
-| `phosphor`             | Φ — stylized flux symbol, umbrella brand.                    |
-| `plasmazones`          | Five stroked zones, the core tiling motif.                   |
-| `plasmazones-editor`   | Zone motif wrapped in a canvas mark.                         |
-| `plasmazones-settings` | Zone motif wrapped in a cog outline.                         |
-| `lambent`              | A curved L cradling a small flame.                           |
-| `afterglow`            | Tapered A with a split elliptical crossbar, echoing the Phosphor mark. |
-| `facet`                | A brilliant-cut gem seen from above: octagonal table, eight star facets. |
-| `limn`                 | A slanted pen nib, split by its slit and vent, drawing a tapered stroke. |
-| `glisten`              | A lens ring around a record dot, with a four-pointed glint of light off its rim. |
-| `cresset`              | A beacon fire: a three-tongued flame in a crescent bowl on a tapered pole. |
-| `illume`               | An almond eye of two crescent lids, with a small eight-rayed sun for its iris. |
+- A 1024 × 1024 SVG with `viewBox="96 96 832 832"`
+- A border with a 4-stop gradient from cyan through blue and purple to rose
+- An inner panel with a radial fill, navy (dark) or a pastel with a brand tint (light)
+- Three soft accent glows
+
+The inner content makes each icon different:
+
+| Mark | Inner |
+| --- | --- |
+| `phosphor` | Φ, a stylized flux symbol, the umbrella brand |
+| `plasmazones` | Five stroked zones, the core tiling motif |
+| `plasmazones-editor` | The zone motif in a canvas mark |
+| `plasmazones-settings` | The zone motif in a cog outline |
+| `lambent` | A curved L that holds a small flame |
+| `afterglow` | A tapered A with a split elliptical crossbar, as in the Phosphor mark |
+| `facet` | A brilliant-cut gem seen from above, with an octagonal table and eight star facets |
+| `limn` | A slanted pen nib, split by its slit and vent, that draws a tapered stroke |
+| `glisten` | A lens ring around a record dot, with a four-pointed glint of light on its rim |
+| `cresset` | A beacon fire, with a three-tongued flame in a crescent bowl on a tapered pole |
+| `illume` | An almond eye of two crescent lids, with a small sun of eight rays as its iris |
+
+## Use
+
+To use the assets from another repository, pin a release archive, as
+[Releases and installing icons](#releases-and-installing-icons) tells.
+
+To download one file, use `curl` on the raw SVG:
+
+```sh
+curl -O https://raw.githubusercontent.com/phosphor-works/branding/main/svg/square/dark/phosphor.svg
+curl -O https://raw.githubusercontent.com/phosphor-works/branding/main/svg/circle/dark/phosphor.svg
+```
 
 ## Mascots
 
-The three Phosphor mascots. Each one is used across the project, the
-Discord bot included, and all three are drawn in the brand palette on
-512 × 512 canvases:
+The project has three Phosphor mascots. The project uses each mascot in many places, the Discord bot included. Each
+mascot uses the brand palette on a 512 × 512 canvas:
 
-| Mascot  | Character                                                                 |
-|---------|---------------------------------------------------------------------------|
-| `glim`  | A firefly in flight: rose edged wing covers lifted open over translucent wings, lit by a cyan lantern tail. |
-| `wisp`  | A will o the wisp: a rose, purple, blue and cyan flame with a white hot core, a curling tail and drifting embers. |
-| `nocti` | A bioluminescent jellyfish with the Phosphor mark glowing on the crown of its bell. |
+| Mascot | Character |
+| --- | --- |
+| `glim` | A firefly in flight. Its wing covers have rose edges and are open over its translucent wings. A cyan lantern tail gives it light. |
+| `wisp` | A will o the wisp. It is a rose, purple, blue and cyan flame with a white hot core, a curling tail and drifting embers. |
+| `nocti` | A bioluminescent jellyfish with the Phosphor mark that glows on the crown of its bell. |
 
-The bodies, tentacles, ribbons and rim lights are computed, so edit
-`scripts/mascots.py` rather than the SVGs and rerun it. The avatar
-variants sit inside the same gradient ring as `svg/circle`, framed so
-the face stays readable at Discord's smallest sizes after the round
-crop (`FIT` in the script sets each one's framing). `MARK_SCALE` shrinks a
-standalone drawing whose glow would otherwise run off the canvas edge. Render one for
-upload with
+A script calculates the bodies, tentacles, ribbons and rim lights. Thus edit `scripts/mascots.py`, not the SVGs, and
+run the script again.
+
+The avatar variants are in the same gradient ring as `svg/circle`. Their framing keeps the face easy to read at the
+smallest sizes of Discord after the round crop. `FIT` in the script sets the framing of each avatar. `MARK_SCALE`
+makes a standalone drawing smaller when its glow goes past the edge of the canvas.
+
+To render one avatar for upload, use
 `rsvg-convert -w 1024 svg/mascot/avatar/glim.svg -o glim.png`.
 
 ## Releases and installing icons
 
-Nothing copies icons or adds this repo as a submodule. Apps and the website
-pin a branding release by version, URL and SHA-256: apps install their icons
-from the archive, and the website serves its `svg/` tree and reads its
-palette. A tag `vX.Y.Z` publishes
-`phosphor-branding-X.Y.Z.tar.gz`:
+No app copies icons or adds this repository as a submodule. Apps and the website pin a branding release by version,
+URL and SHA-256. Apps install their icons from the archive. The website serves its `svg/` tree and reads its palette.
+A tag `vX.Y.Z` publishes `phosphor-branding-X.Y.Z.tar.gz`:
 
 ```
 phosphor-branding-X.Y.Z/
@@ -132,8 +145,7 @@ phosphor-branding-X.Y.Z/
 ├── LICENSE  VERSION
 ```
 
-An app installs each icon under its own app ID, which is also its `.desktop`
-id and AppStream id:
+An app installs each icon under its own app ID. This ID is also its `.desktop` id and its AppStream id:
 
 ```cmake
 include(${branding_SOURCE_DIR}/cmake/PhosphorBranding.cmake)
@@ -141,60 +153,51 @@ phosphor_install_brand_icons(org.phosphor_works.PlasmaZones plasmazones
                              org.phosphor_works.PlasmaZones.Editor plasmazones-editor)
 ```
 
-`scripts/build-release.sh <version> <out dir>` builds the same archive
-locally. It is reproducible for a given librsvg, and it runs
-`scripts/check.py` first, which requires every framed icon to carry a
-`<title>` and a `<desc>` in plain prose, since screen readers announce both.
+`scripts/build-release.sh <version> <out dir>` builds the same archive locally. For a given librsvg, the archive is
+reproducible. The script runs `scripts/check.py` first. That check requires each framed icon to have a `<title>` and a
+`<desc>` in plain prose, because screen readers announce both.
 
 ## Circle variants and the glow fix
 
-`svg/circle/{dark,light}/` holds a round-framed copy of every framed
-icon (avatars, Discord, social cards).  The rounded square becomes a
-circle with the same 36-unit border (outer radius 416, panel radius
-380) and the artwork is unchanged.  These files are generated; edit
-the square icon and re-run the script.
+`svg/circle/{dark,light}/` holds a round-framed copy of each framed icon, for avatars, Discord and social cards.
+The rounded square becomes a circle with the same 36-unit border (outer radius 416, panel radius 380). The artwork
+does not change. These files are generated. To change one, edit the square icon and run the script again.
 
-The accent glows are circles larger than the panel.  Browsers and
-librsvg trim them with a `clipPath`, but QtSvg, which KDE uses to draw
-icons, ignores `clipPath`, so the glows used to tint the transparent
-corners outside the frame.  Each glow is now stored as its exact
-intersection with the panel (square or circle), with its source circle
-kept in `data-glow="cx cy r"`, so no renderer can draw it outside.
+The accent glows are circles larger than the panel. Browsers and librsvg cut them with a `clipPath`. QtSvg draws
+icons for KDE and ignores `clipPath`, so the glows colored the transparent corners outside the frame. Thus the script
+stores each glow as its exact intersection with the panel (square or circle). It keeps the source circle in
+`data-glow="cx cy r"`. No renderer can then draw a glow outside the panel.
 
 ```sh
 python3 scripts/variants.py           # fix glows in svg/square, regenerate svg/circle
 python3 scripts/variants.py --check   # exit 1 if anything is out of date
 ```
 
-Run it after adding or editing a framed icon.  A new icon can keep the
-plain glow `<circle>` elements from the template; the script converts
-them.
+Run the script after you add or edit a framed icon. A new icon can keep the plain glow `<circle>` elements from the
+template. The script converts them.
 
 ## Color tokens
 
-| Role      | Dark     | Light     | Notes |
-|-----------|----------|-----------|-------|
-| Cyan      | `#22D3EE`| `#0EA5E9` | accent gradient stop 0 |
-| Blue      | `#3B82F6`| `#3B82F6` | accent gradient stop 1 / primary |
-| Purple    | `#A855F7`| `#7C3AED` | accent gradient stop 2 |
-| Rose      | `#F43F5E`| `#E11D48` | accent gradient stop 3 |
-| Surface   | `#0B1730`| `#E8EEFF` | inner-square fill on the topbar logo |
+| Role | Dark | Light | Notes |
+| --- | --- | --- | --- |
+| Cyan | `#22D3EE` | `#0EA5E9` | Accent gradient stop 0 |
+| Blue | `#3B82F6` | `#3B82F6` | Accent gradient stop 1, primary |
+| Purple | `#A855F7` | `#7C3AED` | Accent gradient stop 2 |
+| Rose | `#F43F5E` | `#E11D48` | Accent gradient stop 3 |
+| Surface | `#0B1730` | `#E8EEFF` | Inner-square fill on the topbar logo |
 
-Full palette + Material You role map lives at
-[phosphor-works.org/palette/](https://phosphor-works.org/palette/),
-rendered from the canonical [`palette/phosphor.toml`](palette/phosphor.toml)
-in this repo.
+The full palette and the Material You role map are at
+[phosphor-works.org/palette/](https://phosphor-works.org/palette/). That page comes from the canonical
+[`palette/phosphor.toml`](palette/phosphor.toml) in this repository.
 
 ## Palette
 
-`palette/phosphor.toml` is the canonical static brand palette: the
-seven brand colors (`cyan`, `blue`, `purple`, `rose`, `navy`, `abyss`,
-`void`) plus the full Material You role map for both dark and light
-themes, written in [matugen](https://github.com/InioX/matugen)'s role
-vocabulary so apps that already template against matugen output read
-it directly.
+`palette/phosphor.toml` is the canonical static brand palette. It has the seven brand colors (`cyan`, `blue`,
+`purple`, `rose`, `navy`, `abyss`, `void`) and the full Material You role map for the dark and light themes. It uses
+the role vocabulary of [matugen](https://github.com/InioX/matugen), so apps that already use templates for matugen
+output can read it directly.
 
-Drop it in as a wallpaper-independent palette:
+To use it as a palette that does not change with the wallpaper, download it:
 
 ```sh
 mkdir -p ~/.config/plasmazones
@@ -203,19 +206,16 @@ curl -L \
     -o ~/.config/plasmazones/palette.toml
 ```
 
-`palette/preview.html` is a self-contained swatch + role-grid preview
-that opens directly in a browser; the three preview CSS files
-(`preview.css`, `preview.dark.css`, `preview.light.css`) are the same
-ones [phosphor-works.org/palette/](https://phosphor-works.org/palette/)
-loads at runtime.
+`palette/preview.html` is a self-contained preview of the swatches and the role grid. It opens directly in a browser.
+[phosphor-works.org/palette/](https://phosphor-works.org/palette/) loads the same three preview CSS files
+(`preview.css`, `preview.dark.css`, `preview.light.css`) at run time.
 
 ## Matugen template
 
-`matugen/templates/phosphor-palette.toml` is the wallpaper-reactive
-variant — the same role structure as the static palette, but seeded
-from the dominant hues of a user wallpaper via
-[matugen](https://github.com/InioX/matugen)'s Material You engine.
-Install the template + wire it into matugen with the example config:
+`matugen/templates/phosphor-palette.toml` is the variant that changes with the wallpaper. It has the same role
+structure as the static palette. The Material You engine of [matugen](https://github.com/InioX/matugen) makes it from
+the dominant hues of a wallpaper. To install the template and connect it to matugen with the example config, run
+these commands:
 
 ```sh
 mkdir -p ~/.config/matugen/templates
@@ -226,25 +226,11 @@ cat matugen/config.example.toml >> ~/.config/matugen/config.toml   # merge by ha
 matugen image /path/to/wallpaper.png
 ```
 
-…regenerates `~/.config/plasmazones/palette.toml` from the wallpaper.
-
-## Usage
-
-**Consuming from another repo:** pin a release archive, as described in
-[Releases and installing icons](#releases-and-installing-icons).
-
-**One-off download:** `curl` the raw SVG:
-
-```sh
-curl -O https://raw.githubusercontent.com/phosphor-works/branding/main/svg/square/dark/phosphor.svg
-curl -O https://raw.githubusercontent.com/phosphor-works/branding/main/svg/circle/dark/phosphor.svg
-```
+The last command makes `~/.config/plasmazones/palette.toml` again from the wallpaper.
 
 ## License
 
-Brand assets are **CC-BY-SA 4.0** — use them to refer to Phosphor, fork
-them if you're making a derivative, share-alike if you redistribute a
-modified version.  Code in consuming projects (phosphor-web, etc.) is
-GPL-3.0-or-later; the license boundary is deliberate so brand assets
-can travel into docs, blog posts, release announcements without
-dragging the copyleft with them.
+The brand assets are licensed under **CC-BY-SA 4.0**. Use them to refer to Phosphor. You can fork them to make a
+derivative. If you distribute a changed version, use the same license. The code in the projects that use the assets
+(phosphor-web and others) is GPL-3.0-or-later. This license boundary is intentional. It lets the brand assets go into
+documentation, blog posts and release announcements without the copyleft. The license text is in `LICENSE`.
