@@ -1,17 +1,27 @@
 <!-- SPDX-FileCopyrightText: 2026 Phosphor Works Team -->
 <!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
 
+<!-- BEGIN shared: tools/sync writes this block from workspace/sync/claude-header.md. Change it there. -->
 # branding
+
+This file has two parts. The rules that every phosphor-works repository follows come first, from the conventions of
+the workspace repository, imported below. The sections after them belong to this repository only: what it is, its
+layout, how to build and test it, and its own rules, code, skills and agents, and links to the other repositories.
+A section here does not repeat a convention. When a section and the conventions disagree, change one of them so
+that they agree.
+
+The Claude Code tooling comes from the plugins that `.claude/settings.json` enables and `workspace/tools/setup`
+installs. The `phosphor-works` plugin has the command guard, the shared skills (`phosphor-works:build`, `debug`,
+`code-audit`, `record-lesson`, `new-repo`), the shared reviewers, and the lesson index, which adds the lessons that
+fit each prompt.
+
+@../workspace/claude/conventions.md
+<!-- END shared -->
+
+## Overview
 
 The phosphor-works brand assets: the app icons and marks, the mascots, the brand palette and the matugen template.
 Apps and the website do not copy these files. They pin a release archive by version, URL and SHA-256.
-
-The rules every phosphor-works repository follows come from the workspace repository, imported below. This file adds
-branding's own. The shared Claude Code tooling (the command guard, `phosphor-works:code-audit`, the shared reviewers,
-the lesson index) comes from the `phosphor-works` plugin, which `.claude/settings.json` enables and
-`workspace/tools/setup` installs.
-
-@../workspace/claude/conventions.md
 
 ## Layout
 
@@ -27,30 +37,40 @@ the lesson index) comes from the `phosphor-works` plugin, which `.claude/setting
   an icon under the app's ID in `hicolor` (from `square/dark`) and `hicolor-light` (from `square/light`). It is
   shipped inside the release archive, not used from this tree.
 
+## Build and test
+
+CI (`.github/workflows/ci.yml`) runs on every push to `main` and every pull request:
+
+- `python3 scripts/check.py` checks the accessibility attributes of the framed icons (see Rules) in `svg/square` and
+  `svg/circle`, rejects an em or en dash, a spaced hyphen or a semicolon in a `<title>` or `<desc>`, and runs
+  `scripts/variants.py --check` so a stale circle variant fails. It is read-only.
+- `scripts/build-release.sh 0.0.0-ci dist` builds the archive. It needs `rsvg-convert` (librsvg).
+
+`mark/` and `mascot/` are not checked.
+
+## Rules
+
 A framed icon is a 1024 x 1024 SVG with `viewBox="96 96 832 832"`, the four-stop gradient frame, the inner panel
 and three accent glows. Every framed icon needs `role="img"`, `aria-labelledby="title desc"` and exactly one
 non-empty `<title id="title">` and `<desc id="desc">`. Screen readers read both, so they follow the plain-prose
 rules.
 
-## Checks
+### License
 
-CI (`.github/workflows/ci.yml`) runs on every push to `main` and every pull request:
+Everything in the repository, scripts and CMake included, is `CC-BY-SA-4.0` under the single `LICENSE` file. There
+is no `REUSE.toml` and no REUSE lint. The scripts, CMake, workflows, palette, matugen files and `svg/mark` carry the
+SPDX header. The framed icons and the mascots, which the scripts write, do not.
 
-- `python3 scripts/check.py` checks the accessibility attributes above in `svg/square` and `svg/circle`, rejects an
-  em or en dash, a spaced hyphen or a semicolon in a `<title>` or `<desc>`, and runs `scripts/variants.py --check`
-  so a stale circle variant fails. It is read-only.
-- `scripts/build-release.sh 0.0.0-ci dist` builds the archive. It needs `rsvg-convert` (librsvg).
+## Other repositories
 
-`mark/` and `mascot/` are not checked.
-
-## How a change reaches the apps
+### How a change reaches the apps
 
 A change ships only in a release. PlasmaZones and Lambent pin it in `cmake/PlasmaZonesDependencies.cmake` and
 `cmake/LambentDependencies.cmake` (`_VERSION`, `_URL`, `_SHA256`), and repeat the pin in their packaging:
 `packaging/nix/package.nix` in both, and PlasmaZones' `arch/PKGBUILD`, `rpm/plasmazones.spec` and
 `debian/copyright`. A new icon also needs a `phosphor_install_brand_icons` pair in the app.
 
-## Releasing
+### Releasing
 
 1. Merge the change to `main`.
 2. Push a tag `vX.Y.Z`.
@@ -59,9 +79,3 @@ A change ships only in a release. PlasmaZones and Lambent pin it in `cmake/Plasm
 `phosphor-branding-X.Y.Z.tar.gz` and its `.sha256` as a GitHub release. The archive is reproducible for a given
 librsvg, so a local `scripts/build-release.sh X.Y.Z <scratch dir>` can preview it, but the SHA-256 an app pins is
 the one the release publishes. Then bump the pin in each app.
-
-## License
-
-Everything in the repository, scripts and CMake included, is `CC-BY-SA-4.0` under the single `LICENSE` file. There
-is no `REUSE.toml` and no REUSE lint. The scripts, CMake, workflows, palette, matugen files and `svg/mark` carry the
-SPDX header. The framed icons and the mascots, which the scripts write, do not.
